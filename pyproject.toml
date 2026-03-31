@@ -9,4 +9,5 @@ dependencies = [
     "openai>=2.30.0",
     "pydantic>=2.12.5",
     "pytest>=9.0.2",
+    "python-dotenv>=1.2.2",
 ]

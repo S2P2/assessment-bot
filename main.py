@@ -1,17 +1,26 @@
 import dspy
 import os
+from dotenv import load_dotenv
 from src.data import load_questions
 from src.orchestrator import InterviewOrchestrator
 from src.modules import InterviewBot
 
 def main():
     # Setup
-    # Ensure OPENAI_API_KEY is in environment or use a dummy if just testing structure
+    load_dotenv()
+    
+    # Ensure OPENAI_API_KEY is in environment
     api_key = os.getenv("OPENAI_API_KEY")
+    base_url = os.getenv("OPENAI_BASE_URL")
+    
     if not api_key:
         print("Warning: OPENAI_API_KEY not found in environment.")
     
-    lm = dspy.LM('openai/gpt-4o-mini', api_key=api_key)
+    lm_args = {"api_key": api_key}
+    if base_url:
+        lm_args["api_base"] = base_url  # litellm uses api_base for custom endpoints
+    
+    lm = dspy.LM('openai/gpt-4o-mini', **lm_args)
     dspy.configure(lm=lm)
     
     data = load_questions("questions.json")
