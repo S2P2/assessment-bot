@@ -1,0 +1,16 @@
+{
+  "interview_id": "sql-eval-001",
+  "topics": [
+    {
+      "topic_name": "SQL Basics",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "How do you find unique values in a column?",
+          "criteria": "Must use the DISTINCT keyword.",
+          "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly."
+        }
+      ]
+    }
+  ]
+}
