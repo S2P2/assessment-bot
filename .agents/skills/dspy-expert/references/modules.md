@@ -7,7 +7,6 @@ All modules inherit from `dspy.Module`. Use them directly or compose them.
 | Module | Description | Typical Use |
 |--------|-------------|-------------|
 | `dspy.Predict` | Single LM call | Simple extraction, classification |
-| `dspy.TypedPredictor` | Structured LM call | Validation of Pydantic models / complex types |
 | `dspy.ChainOfThought` | CoT reasoning | Multi-step reasoning, explanation |
 | `dspy.ProgramOfThought` | Code-based reasoning (needs Deno) | Math, symbolic computation |
 | `dspy.ReAct` | Tool-use agent loop | Search, APIs, multi-tool agents |
@@ -18,25 +17,31 @@ All modules inherit from `dspy.Module`. Use them directly or compose them.
 | `dspy.BestOfN` | Sample N independently, pick best | Reliability via sampling |
 | `dspy.Parallel` | Run modules in parallel | Batch processing |
 
-### TypedPredictor & Pydantic Signatures
-Use `dspy.TypedPredictor` to enforce Pydantic validation on signature outputs.
+### Structured Outputs & Adapters
+In modern DSPy (2.5+), structured outputs are achieved by using Pydantic types in your `Signature` and configuring an **Adapter** (like `dspy.JSONAdapter`).
 
 ```python
+import dspy
 from pydantic import BaseModel, Field
-from typing import List, Literal
+from typing import List
 
+# 1. Define your output structure
 class Person(BaseModel):
     name: str
     age: int = Field(ge=0, le=120)
     hobbies: List[str]
 
+# 2. Define a Signature with types
 class Extraction(dspy.Signature):
     """Extract person details from text."""
     text: str = dspy.InputField()
     result: Person = dspy.OutputField()
 
-# TypedPredictor handles the structured parsing
-extractor = dspy.TypedPredictor(Extraction)
+# 3. Configure DSPy to use an adapter (globally or per-call)
+dspy.configure(adapter=dspy.JSONAdapter())
+
+# 4. Use standard dspy.Predict (it will now handle JSON/Pydantic)
+extractor = dspy.Predict(Extraction)
 response = extractor(text="Alice is 25 and likes climbing and painting.")
 print(response.result.name, response.result.age)
 ```

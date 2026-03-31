@@ -64,8 +64,10 @@ class AssessQuality(dspy.Signature):
     is_grounded: bool = dspy.OutputField(desc="Is the answer supported by context?")
     helpfulness: int = dspy.OutputField(desc="1-5 score")
 
-judge = dspy.TypedPredictor(AssessQuality)
-
+judge = dspy.Predict(AssessQuality)
+# Using dspy.Predict with a typed signature (Pydantic or Literal)
+# handles structured assessment results.
+```
 def custom_metric(example, pred, trace=None):
     assessment = judge(context=example.context, answer=pred.answer)
     score = 1.0 if assessment.is_grounded else 0.0

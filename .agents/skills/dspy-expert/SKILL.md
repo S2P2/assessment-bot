@@ -60,8 +60,6 @@ class Classify(dspy.Signature):
 
 **Supported field types:** `str`, `int`, `float`, `bool`, `list[T]`, `dict[K,V]`, `Optional[T]`, `TypedDict`, `Literal[...]`, `dspy.Image`, `dspy.Audio`, `dspy.History`, `dspy.Code`, `dspy.File`, and **Pydantic models** (`BaseModel`).
 
-**TypedPredictor:** When using complex Pydantic types, use `dspy.TypedPredictor(Signature)` for automatic validation and parsing.
-
 ---
 
 ## Deep Dives (Progressive Disclosure)
