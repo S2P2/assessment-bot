@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **DSPy Reasoning Strategy**: Switched from `dspy.Predict` to `dspy.ChainOfThought` for more robust evaluation logic.
+- **Signature Refinement**: Simplified `InterviewTurn` signature and moved detailed instructions to field descriptions per DSPy best practices.
+- **UI Flow**: Modified the CLI loop to only print the full question on the first attempt, creating a cleaner chat experience during hint sequences.
+
 ## [0.1.0] - 2026-03-31
 
 ### Added
