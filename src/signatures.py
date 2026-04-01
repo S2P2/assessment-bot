@@ -10,4 +10,5 @@ class InterviewTurn(dspy.Signature):
     history = dspy.InputField(desc="Previous turns as a list of strings")
     user_input = dspy.InputField()
     attempt_number = dspy.InputField()
-    action: InterviewAction = dspy.OutputField(desc="Structured response including evaluation, reasoning, and the next response string. If correct, set command to NEXT_QUESTION and provide a transition. If incorrect, set command to GIVE_HINT and provide a nudge based on guidelines without revealing the criteria keywords.")
+    next_topic = dspy.InputField(desc="Name of the next topic, or None if finishing.")
+    action: InterviewAction = dspy.OutputField(desc="Structured response including evaluation, reasoning, and the next response string. If command is NEXT_QUESTION, the response MUST be a concluding statement or transition. It MUST NOT ask follow-up questions or prompt for further input, as the system will immediately move to the next item.")
