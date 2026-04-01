@@ -1,5 +1,6 @@
 import dspy
 import os
+import mlflow
 from dotenv import load_dotenv
 from src.data import load_questions
 from src.orchestrator import InterviewOrchestrator
@@ -8,6 +9,8 @@ from src.modules import InterviewBot
 
 def main():
     # Setup
+    mlflow.set_experiment("Interview_Bot_v0.3.0")
+    mlflow.dspy.autolog()
     load_dotenv()
 
     # Ensure OPENAI_API_KEY is in environment
