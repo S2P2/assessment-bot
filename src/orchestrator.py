@@ -20,3 +20,9 @@ class InterviewOrchestrator:
 
     def should_force_skip(self):
         return self.attempts >= self.max_attempts
+
+    def get_next_topic_name(self):
+        next_idx = self.current_idx + 1
+        if next_idx >= len(self.questions):
+            return None
+        return self.questions[next_idx]["topic_name"]
