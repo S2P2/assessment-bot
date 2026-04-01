@@ -7,10 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-01
+
+### Added
+- **Ambiguity Handling**: Introduced the `CLARIFY` command to handle vague answers without penalizing the candidate's attempt counter.
+- **MLflow Observability**: Enabled native `mlflow.dspy.autolog()` for automatic tracing of DSPy calls, reasoning, and metadata.
+
+### Changed
+- **State Logic**: Updated `InterviewOrchestrator` to support the `CLARIFY` command by maintaining the current state (no counter increment).
+
+## [0.2.0] - 2026-03-31
+
 ### Changed
 - **DSPy Reasoning Strategy**: Switched from `dspy.Predict` to `dspy.ChainOfThought` for more robust evaluation logic.
 - **Signature Refinement**: Simplified `InterviewTurn` signature and moved detailed instructions to field descriptions per DSPy best practices.
 - **UI Flow**: Modified the CLI loop to only print the full question on the first attempt, creating a cleaner chat experience during hint sequences.
+- **Topic Awareness**: Orchestrator now tracks and identifies the `next_topic` to improve transition context.
 
 ## [0.1.0] - 2026-03-31
 
@@ -23,6 +35,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Automated Testing**: Comprehensive Pytest suite for core data, schema, and orchestration logic.
 - **Project Tooling**: Initial project setup using `uv` with reproducible dependencies.
 - **Project Documentation**: Initial README and Changelog.
-
-### Changed
-- Refactored `src/modules.py` to use `dspy.Predict` for compatibility with the latest DSPy 3.x release.
