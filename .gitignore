@@ -34,6 +34,10 @@ ENV/
 .coverage
 htmlcov/
 
+# MLflow
+mlflow.db
+mlartifacts/
+
 # uv
 # uv.lock is tracked
 
