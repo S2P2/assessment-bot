@@ -24,7 +24,7 @@
         {
           "id": "q3",
           "text": "How do you handle exceptions in Python to prevent the program from crashing?",
-          "criteria": "Must mention the try and except blocks.",
+          "criteria": "Must explicitly mention 'try' and 'except' blocks. Note: 'catch' is incorrect syntax in Python.",
           "hint_guidelines": "Ask about the block-based structure used to catch errors during execution."
         }
       ]
