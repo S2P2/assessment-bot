@@ -17,6 +17,7 @@ class InterviewOrchestrator:
             self.attempts = 0
         elif command == "GIVE_HINT":
             self.attempts += 1
+        # CLARIFY does nothing to state (keeps same question, same attempts)
 
     def should_force_skip(self):
         return self.attempts >= self.max_attempts

@@ -18,6 +18,13 @@ def test_orchestrator_attempts():
     assert orc.attempts == 2
     assert orc.should_force_skip() is True
 
+def test_orchestrator_clarify():
+    questions = [{"id": "q1", "topic_name": "T1"}]
+    orc = InterviewOrchestrator(questions)
+    orc.handle_command("CLARIFY")
+    assert orc.attempts == 0  # Should NOT increment
+    assert orc.current_idx == 0 # Should NOT move on
+
 def test_orchestrator_get_next_topic_name():
     questions = [
         {"id": "q1", "text": "Q1", "topic_name": "Topic 1"},
