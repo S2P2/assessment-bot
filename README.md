@@ -1,13 +1,20 @@
-# DSPy Interview Bot POC
+# DSPy Interview Bot POC (v0.3.0)
 
-A terminal-based IT skill interview chatbot built with the **DSPy framework**. It uses a Unified Predictor model to evaluate answers and generate responses in a single LLM call, while a Python Orchestrator manages the conversation state.
+A terminal-based IT skill interview chatbot built with the **DSPy framework**. It uses a Unified Predictor model with **Chain of Thought** reasoning to evaluate answers and generate responses in a single LLM call, while a Python Orchestrator manages the rigid conversation state.
+
+## New in v0.3.0
+
+- **Ambiguity Handling (`CLARIFY`)**: A new command that allows the LLM to ask for more detail when an answer is too vague (e.g., "write good code") without penalizing the candidate's attempt counter.
+- **MLflow Observability**: Native integration with MLflow for automatic tracing of DSPy calls. This captures reasoning steps, inputs, and outputs for every turn.
+- **Topic Awareness**: The bot is now aware of upcoming topics, allowing for smoother transitions (e.g., "Great! Now let's move on to Python Basics").
+- **Improved UI**: To reduce clutter, the full question text is only printed on the first attempt. During hints and clarifications, only the interviewer's nudge is shown.
 
 ## Features
 
-- **Unified Logic**: Evaluation and response generation handled in a single structured LLM call.
-- **Structured Output**: Uses Pydantic models to ensure consistent evaluation and command logic.
-- **Orchestration**: Manages question progression, attempt limits (max 2 hints), and conversation history.
-- **Customizable**: Support for custom OpenAI `base_url` and `.env` configuration.
+- **Unified Logic**: Evaluation and response generation handled in a single structured call using `dspy.ChainOfThought`.
+- **Structured Output**: Uses Pydantic models in `src/schema.py` to ensure consistent evaluation and command logic.
+- **Orchestration**: Manages question progression, attempt limits (max 2 hints), and conversation history in `src/orchestrator.py`.
+- **Customizable**: Full support for custom OpenAI `base_url` and `.env` files.
 - **Modern Tooling**: Managed with `uv` for fast, reproducible Python environments.
 
 ## Setup
@@ -29,14 +36,21 @@ A terminal-based IT skill interview chatbot built with the **DSPy framework**. I
 
 ## Usage
 
-Run the interview bot:
+### Run the Interview Bot
 ```bash
 uv run python main.py
 ```
 
+### View MLflow Traces
+Every interview turn is automatically logged. To view the traces and reasoning:
+```bash
+uv run mlflow ui
+```
+Then navigate to `http://localhost:5000` to see the "Interview_Bot_v0.3.0" experiment.
+
 ## Testing
 
-Run the automated test suite:
+Run the automated test suite to verify the orchestrator and schema logic:
 ```bash
 # On Windows (PowerShell)
 $env:PYTHONPATH="."
@@ -48,9 +62,9 @@ PYTHONPATH=. uv run pytest
 
 ## Architecture
 
-- `main.py`: Entry point and CLI loop.
-- `src/modules.py`: DSPy modules (Interviewer logic).
-- `src/signatures.py`: DSPy signatures defining the I/O schema.
-- `src/orchestrator.py`: Python state management.
+- `main.py`: Entry point, CLI loop, and MLflow configuration.
+- `src/modules.py`: DSPy modules (using `ChainOfThought`).
+- `src/signatures.py`: DSPy signatures defining the I/O schema and constraints.
+- `src/orchestrator.py`: Python state management (attempts, topics, history).
 - `src/schema.py`: Pydantic models for structured LLM interaction.
 - `src/data.py`: Question loading utility.
