@@ -4,24 +4,24 @@ def test_orchestrator_progression():
     questions = [{"id": "q1", "text": "Q1"}, {"id": "q2", "text": "Q2"}]
     orc = InterviewOrchestrator(questions)
     assert orc.get_current_question()["id"] == "q1"
-    orc.handle_command("NEXT_QUESTION")
+    orc.record_turn("NEXT_QUESTION", "correct")
     assert orc.get_current_question()["id"] == "q2"
     assert orc.attempts == 0
 
 def test_orchestrator_attempts():
     questions = [{"id": "q1", "text": "Q1"}]
     orc = InterviewOrchestrator(questions, max_attempts=2)
-    orc.handle_command("GIVE_HINT")
+    orc.record_turn("GIVE_HINT", "incorrect")
     assert orc.attempts == 1
     assert orc.should_force_skip() is False
-    orc.handle_command("GIVE_HINT")
+    orc.record_turn("GIVE_HINT", "incorrect")
     assert orc.attempts == 2
     assert orc.should_force_skip() is True
 
 def test_orchestrator_clarify():
     questions = [{"id": "q1", "topic_name": "T1"}]
     orc = InterviewOrchestrator(questions)
-    orc.handle_command("CLARIFY")
+    orc.record_turn("CLARIFY", "ambiguous")
     assert orc.attempts == 0  # Should NOT increment
     assert orc.current_idx == 0 # Should NOT move on
 
@@ -36,5 +36,27 @@ def test_orchestrator_get_next_topic_name():
     assert orc.get_next_topic_name() == "Topic 2"
     
     # Move to index 1, next should be None
-    orc.handle_command("NEXT_QUESTION")
+    orc.record_turn("NEXT_QUESTION", "correct")
     assert orc.get_next_topic_name() is None
+
+def test_orchestrator_record_turn():
+    questions = [{"id": "q1", "text": "Q1", "topic_name": "T1"}]
+    orc = InterviewOrchestrator(questions)
+    
+    # First turn: Clarify
+    orc.record_turn("CLARIFY", "ambiguous")
+    assert orc.turns_in_question == 1
+    assert orc.clarifications_requested == 1
+    assert orc.last_evaluation == "ambiguous"
+    
+    # Second turn: Hint
+    orc.record_turn("GIVE_HINT", "incorrect")
+    assert orc.turns_in_question == 2
+    assert orc.hints_given == 1
+    assert orc.attempts == 1 # Backward compatibility
+    
+    # Third turn: Next Question
+    orc.record_turn("NEXT_QUESTION", "correct")
+    assert len(orc.question_summaries) == 1
+    assert orc.question_summaries[0]["final_evaluation"] == "correct"
+    assert orc.turns_in_question == 0 # Reset
