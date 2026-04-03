@@ -1,6 +1,12 @@
-# DSPy Interview Bot POC (v0.3.0)
+# DSPy Interview Bot POC (v0.3.1)
 
 A terminal-based IT skill interview chatbot built with the **DSPy framework**. It uses a Unified Predictor model with **Chain of Thought** reasoning to evaluate answers and generate responses in a single LLM call, while a Python Orchestrator manages the rigid conversation state.
+
+## New in v0.3.1
+
+- **Detailed Interaction Tracking**: The `InterviewOrchestrator` now provides granular tracking of `turns_in_question`, `hints_given`, and `clarifications_requested`, allowing for deeper session analytics.
+- **Evaluation History**: The LLM now receives the `last_evaluation` result, providing context for the current turn (e.g., whether the user was just asked to clarify their previous answer).
+- **Session Summaries**: Every question session is summarized into `question_summaries`, capturing final evaluations, total turns, and skip reasons for persistent reporting.
 
 ## New in v0.3.0
 

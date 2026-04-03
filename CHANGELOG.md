@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-04-03
+
+### Added
+- **Detailed Interaction Tracking**: `InterviewOrchestrator` now tracks `turns_in_question`, `hints_given`, `clarifications_requested`, and `question_summaries` for more granular session analytics.
+- **Evaluation History**: Added `last_evaluation` and `evaluation_history` to the orchestrator to provide context for the next turn.
+
+### Changed
+- **Orchestrator API**: Replaced `handle_command` with a more descriptive `record_turn` method that updates all state counters and records question summaries.
+- **Signature Refinement**: Updated `InterviewTurn` signature to include `last_evaluation` as an input field, allowing the LLM to adjust its response based on the previous evaluation (e.g., if the user was just asked to clarify).
+- **UI Logic**: Switched the UI's question-printing logic to use `turns_in_question` instead of `attempts`, ensuring the question is only printed once even if multiple clarifications occur.
+
 ## [0.3.0] - 2026-04-01
 
 ### Added
