@@ -45,8 +45,8 @@ def main():
         if not q:
             break
 
-        # Only print the full question if this is the first attempt
-        if orc.attempts == 0:
+        # Only print the full question if this is the first turn
+        if orc.turns_in_question == 0:
             print(f"\n[{q['topic_name']}] Interviewer: {q['text']}")
 
         user_input = input("You: ")
@@ -59,6 +59,7 @@ def main():
             history=orc.history[-5:],
             user_input=user_input,
             attempt_number=orc.attempts,
+            last_evaluation=orc.last_evaluation,
             next_topic=orc.get_next_topic_name()
         )
 
@@ -74,7 +75,7 @@ def main():
 
         orc.history.append(f"User: {user_input}")
         orc.history.append(f"Interviewer: {action.response}")
-        orc.handle_command(command)
+        orc.record_turn(command, action.evaluation)
 
     print("\n--- Interview Complete ---")
 
