@@ -9,7 +9,7 @@ from src.modules import InterviewBot
 
 def main():
     # Setup
-    mlflow.set_experiment("Interview_Bot_v0.3.0")
+    mlflow.set_experiment("Interview_Bot_v0.3.1")
     mlflow.dspy.autolog()
     load_dotenv()
 

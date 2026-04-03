@@ -52,7 +52,7 @@ Every interview turn is automatically logged. To view the traces and reasoning:
 ```bash
 uv run mlflow ui
 ```
-Then navigate to `http://localhost:5000` to see the "Interview_Bot_v0.3.0" experiment.
+Then navigate to `http://localhost:5000` to see the "Interview_Bot_v0.3.1" experiment.
 
 ## Testing
 
