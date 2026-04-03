@@ -14,23 +14,14 @@ The orchestrator will track the following per-question state:
 - `turns_in_question`: (int) Increments on **every** interaction for the current question. Resets on `NEXT_QUESTION`.
 - `hints_given`: (int) Increments only on `GIVE_HINT`. Resets on `NEXT_QUESTION`.
 - `clarifications_requested`: (int) Increments only on `CLARIFY`. Resets on `NEXT_QUESTION`.
+- `last_evaluation`: (str) The evaluation result from the most recent turn (e.g., "correct", "incorrect", "ambiguous").
+- `evaluation_history`: (list[str]) The sequence of evaluations for the current question.
 - `question_summaries`: (list[dict]) A history of metadata for each completed question.
 
-**Example Summary Structure:**
-```python
-{
-    "question_id": "q1",
-    "final_evaluation": "correct",
-    "total_turns": 3,
-    "hints_used": 1,
-    "clarifications_used": 1,
-    "was_force_skipped": False
-}
-```
-
-### 2.2 `handle_command` Logic
-- `handle_command(command, evaluation=None)`: Updated to accept the optional evaluation result.
-- `NEXT_QUESTION`, `PROMPT_SKIP`: Record the summary (including `evaluation`), increment `current_idx`, and reset the per-question counters.
+### 2.2 `record_turn(command, evaluation)` Logic
+This method replaces the previous `handle_command`.
+- Updates `last_evaluation` and appends to `evaluation_history`.
+- `NEXT_QUESTION`, `PROMPT_SKIP`: Record the summary (including `evaluation_history`), increment `current_idx`, and reset the per-question counters/history.
 - `GIVE_HINT`: Increment `hints_given` and `turns_in_question`.
 - `CLARIFY`: Increment `clarifications_requested` and `turns_in_question`.
 - All other commands (if any): Increment `turns_in_question`.
@@ -39,8 +30,11 @@ The orchestrator will track the following per-question state:
 
 ### 3.1 Question Printing
 Replace the current check for `orc.attempts == 0` with `orc.turns_in_question == 0`.
-- The full question text (e.g., "How do you find unique values in a column?") will only be printed once at the start of the question.
-- Subsequent `CLARIFY` or `GIVE_HINT` responses from the bot will provide the follow-up message without re-printing the root question.
+- The full question text will only be printed once at the start of the question.
+
+### 3.2 Bot Context
+- Pass `orc.last_evaluation` into the `InterviewBot` (requires updating `src/signatures.py`) to provide explicit context on the previous turn's judgment.
+
 
 ## 4. Testing Strategy
 
