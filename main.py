@@ -1,6 +1,7 @@
 import dspy
 import os
 import mlflow
+import uuid
 from dotenv import load_dotenv
 from src.data import load_questions
 from src.orchestrator import InterviewOrchestrator
@@ -12,6 +13,10 @@ def main():
     mlflow.set_experiment("Interview_Bot_v0.3.1")
     mlflow.dspy.autolog()
     load_dotenv()
+
+    # User and Session IDs
+    user_id = input("Enter your Name/Candidate ID: ") or "anonymous"
+    session_id = str(uuid.uuid4())
 
     # Ensure OPENAI_API_KEY is in environment
     api_key = os.getenv("OPENAI_API_KEY")
@@ -61,6 +66,13 @@ def main():
             attempt_number=orc.attempts,
             last_evaluation=orc.last_evaluation,
             next_topic=orc.get_next_topic_name()
+        )
+
+        mlflow.update_current_trace(
+            metadata={
+                "mlflow.trace.user": user_id,
+                "mlflow.trace.session": session_id,
+            }
         )
 
         action = result.action
