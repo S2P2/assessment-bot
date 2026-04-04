@@ -1,16 +1,25 @@
 import dspy
 import os
+import sys
 import mlflow
 import uuid
 from dotenv import load_dotenv
-from src.data import load_questions
+from mlflow.utils.git_utils import get_git_commit
+from src.data import load_questions, flatten_questions
 from src.orchestrator import InterviewOrchestrator
 from src.modules import InterviewBot
+
+VERSION = "0.3.2"
+MAX_RETRIES = 2
 
 
 def main():
     # Setup
-    mlflow.set_experiment("Interview_Bot_v0.3.1")
+    mlflow.set_experiment("Interview_Bot")
+
+    git_commit = get_git_commit(".") or "local-dev"
+    mlflow.set_active_model(name=f"assessment-bot-{git_commit[:8]}")
+
     mlflow.dspy.autolog()
     load_dotenv()
 
@@ -23,73 +32,98 @@ def main():
     base_url = os.getenv("OPENAI_BASE_URL")
 
     if not api_key:
-        print("Warning: OPENAI_API_KEY not found in environment.")
+        sys.exit("Error: OPENAI_API_KEY not found. Set it in .env or environment.")
 
+    model = os.getenv("MODEL", "openai/qwen3.5:4b")
     lm_args = {"api_key": api_key}
     if base_url:
         lm_args["api_base"] = base_url  # litellm uses api_base for custom endpoints
 
-    lm = dspy.LM("openai/qwen3.5:4b", **lm_args)
+    lm = dspy.LM(model, **lm_args)
     dspy.configure(lm=lm)
 
     data = load_questions("questions.json")
-    # Flatten questions for the orchestrator (POC simplification)
-    all_questions = []
-    for topic in data["topics"]:
-        for q in topic["questions"]:
-            q["topic_name"] = topic["topic_name"]
-            all_questions.append(q)
+    all_questions = flatten_questions(data)
 
     orc = InterviewOrchestrator(all_questions)
     bot = InterviewBot()
 
     print(f"--- Starting Interview: {data['interview_id']} ---")
 
-    while True:
-        q = orc.get_current_question()
-        if not q:
-            break
+    try:
+        while True:
+            q = orc.get_current_question()
+            if not q:
+                break
 
-        # Only print the full question if this is the first turn
-        if orc.turns_in_question == 0:
-            print(f"\n[{q['topic_name']}] Interviewer: {q['text']}")
+            # Only print the full question if this is the first turn
+            if orc.turns_in_question == 0:
+                print(f"\n[{q['topic_name']}] Interviewer: {q['text']}")
 
-        user_input = input("You: ")
-        # Call DSPy
-        result = bot(
-            topic=q["topic_name"],
-            question=q["text"],
-            criteria=q["criteria"],
-            hint_guidelines=q["hint_guidelines"],
-            history=orc.history[-5:],
-            user_input=user_input,
-            attempt_number=orc.attempts,
-            last_evaluation=orc.last_evaluation,
-            next_topic=orc.get_next_topic_name()
-        )
+            user_input = input("You: ")
 
-        mlflow.update_current_trace(
-            metadata={
-                "mlflow.trace.user": user_id,
-                "mlflow.trace.session": session_id,
-            }
-        )
+            # Wrap bot call in MLflow span for trace metadata
+            with mlflow.start_span(name=f"{q['topic_name']}: {q['id']}") as span:
+                span.set_inputs({
+                    "question": q["text"],
+                    "user_input": user_input,
+                    "attempt_number": orc.attempts,
+                })
 
-        action = result.action
-        command = action.command
+                result = _call_bot_with_retry(bot, q, orc, user_input)
 
-        # Orchestrator Override
-        if orc.should_force_skip() and command == "GIVE_HINT":
-            command = "PROMPT_SKIP"
-            print("\n(System: Maximum attempts reached. Suggesting skip.)")
+                span.set_outputs(result.action.model_dump())
 
-        print(f"\nInterviewer: {action.response}")
+                # Update trace metadata - must be within span context
+                mlflow.update_current_trace(
+                    tags={"version": VERSION, "model": model},
+                    metadata={
+                        "mlflow.trace.user": user_id,
+                        "mlflow.trace.session": session_id,
+                    }
+                )
 
-        orc.history.append(f"User: {user_input}")
-        orc.history.append(f"Interviewer: {action.response}")
-        orc.record_turn(command, action.evaluation)
+            action = result.action
+            command = action.command
 
-    print("\n--- Interview Complete ---")
+            # Orchestrator Override
+            if orc.should_force_skip() and command == "GIVE_HINT":
+                command = "PROMPT_SKIP"
+                print("\n(System: Maximum attempts reached. Suggesting skip.)")
+
+            print(f"\nInterviewer: {action.response}")
+
+            orc.history.append(f"User: {user_input}")
+            orc.history.append(f"Interviewer: {action.response}")
+            orc.record_turn(command, action.evaluation)
+
+        print("\n--- Interview Complete ---")
+    except KeyboardInterrupt:
+        print("\n--- Interview ended by user ---")
+
+
+def _call_bot_with_retry(bot, q, orc, user_input):
+    """Call the bot with retry logic for transient failures."""
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            return bot(
+                topic=q["topic_name"],
+                question=q["text"],
+                criteria=q["criteria"],
+                hint_guidelines=q["hint_guidelines"],
+                history=orc.history[-5:],
+                user_input=user_input,
+                attempt_number=orc.attempts,
+                last_evaluation=orc.last_evaluation,
+                next_topic=orc.get_next_topic_name(),
+            )
+        except Exception as e:
+            if attempt < MAX_RETRIES:
+                print(f"\n(System: Retrying due to error: {e})")
+                continue
+            print(f"\n(System: LLM call failed after {MAX_RETRIES + 1} attempts: {e})")
+            print("Please try answering again.")
+            raise
 
 
 if __name__ == "__main__":
