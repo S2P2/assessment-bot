@@ -1,4 +1,4 @@
-# DSPy Interview Bot POC (v0.3.1)
+# DSPy Interview Bot POC (v0.3.2)
 
 A terminal-based IT skill interview chatbot built with the **DSPy framework**. It uses a Unified Predictor model with **Chain of Thought** reasoning to evaluate answers and generate responses in a single LLM call, while a Python Orchestrator manages the rigid conversation state.
 
@@ -20,7 +20,9 @@ A terminal-based IT skill interview chatbot built with the **DSPy framework**. I
 - **Unified Logic**: Evaluation and response generation handled in a single structured call using `dspy.ChainOfThought`.
 - **Structured Output**: Uses Pydantic models in `src/schema.py` to ensure consistent evaluation and command logic.
 - **Orchestration**: Manages question progression, attempt limits (max 2 hints), and conversation history in `src/orchestrator.py`.
-- **Customizable**: Full support for custom OpenAI `base_url` and `.env` files.
+- **Customizable**: Full support for custom OpenAI `base_url`, configurable model, and `.env` files.
+- **MLflow Tracing**: Every turn is traced with user/session metadata and named spans (`{topic}: {question_id}`) for easy filtering.
+- **Resilient**: Retries on transient LLM failures, exits cleanly on Ctrl+C, and gives clear error messages for missing config or data files.
 - **Modern Tooling**: Managed with `uv` for fast, reproducible Python environments.
 
 ## Setup
@@ -38,6 +40,7 @@ A terminal-based IT skill interview chatbot built with the **DSPy framework**. I
    ```bash
    OPENAI_API_KEY=your-key-here
    OPENAI_BASE_URL=https://api.openai.com/v1  # Optional
+   MODEL=openai/qwen3.5:4b                    # Optional (defaults to openai/qwen3.5:4b)
    ```
 
 ## Usage
@@ -52,7 +55,7 @@ Every interview turn is automatically logged. To view the traces and reasoning:
 ```bash
 uv run mlflow ui
 ```
-Then navigate to `http://localhost:5000` to see the "Interview_Bot_v0.3.1" experiment.
+Then navigate to `http://localhost:5000` to see the "Interview_Bot" experiment. Traces include version metadata for filtering across releases.
 
 ## Testing
 
@@ -68,9 +71,9 @@ PYTHONPATH=. uv run pytest
 
 ## Architecture
 
-- `main.py`: Entry point, CLI loop, and MLflow configuration.
+- `main.py`: Entry point, CLI loop, MLflow configuration, and retry logic.
 - `src/modules.py`: DSPy modules (using `ChainOfThought`).
 - `src/signatures.py`: DSPy signatures defining the I/O schema and constraints.
 - `src/orchestrator.py`: Python state management (attempts, topics, history).
 - `src/schema.py`: Pydantic models for structured LLM interaction.
-- `src/data.py`: Question loading utility.
+- `src/data.py`: Question loading with validation, and `flatten_questions()` for topic association.

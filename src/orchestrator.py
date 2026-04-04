@@ -2,7 +2,7 @@ class InterviewOrchestrator:
     def __init__(self, questions, max_attempts=2):
         self.questions = questions
         self.current_idx = 0
-        self.attempts = 0 # Backward compatibility
+        self.attempts = 0  # Hint attempts (drives force-skip logic)
         self.max_attempts = max_attempts
         self.history = []
         

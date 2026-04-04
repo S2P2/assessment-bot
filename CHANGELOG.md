@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-04-04
+
+### Added
+- **Model Configuration**: Added `MODEL` environment variable to allow customizable model selection via `.env` (defaults to `openai/qwen3.5:4b`).
+- **Question Flattening**: Moved question flattening logic from `main.py` to `flatten_questions()` in `src/data.py`. No longer mutates question dicts in-place.
+- **LLM Retry Logic**: Bot calls now retry up to 2 times on transient failures before surfacing an error.
+- **Graceful Exit**: Ctrl+C during interview prints a clean exit message instead of a traceback.
+- **Test Coverage**: Added tests for error paths (missing files, invalid JSON), orchestrator edge cases (empty questions, unknown commands, boundary conditions), and schema validation (all evaluation/command types, invalid values).
+
+### Changed
+- **MLflow Experiment**: Renamed from versioned `Interview_Bot_v0.3.1` to stable `Interview_Bot`. Version is now tracked as trace metadata for cross-version filtering.
+- **Span Naming**: MLflow span names changed from `Turn: {topic}` to `{topic}: {question_id}` for better trace filtering.
+- **Error Handling**: `load_questions()` now exits with clear messages for missing files and invalid JSON instead of raw tracebacks.
+- **API Key Check**: Missing `OPENAI_API_KEY` now exits immediately instead of printing a warning and crashing later.
+- **Orchestrator Comment**: Fixed misleading `# Backward compatibility` comment on `attempts` field.
+- **Project Description**: Replaced template placeholder in `pyproject.toml` with actual description.
+
 ## [0.3.1] - 2026-04-03
 
 ### Added
