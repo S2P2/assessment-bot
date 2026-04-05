@@ -81,11 +81,11 @@ Left sidebar (30%) + right chat panel (70%), built with Gradio Blocks:
 3. Gradio app launches
 
 **Per candidate session:**
-1. Candidate lands → sees user ID form
-2. On submit → new `InterviewOrchestrator` created, stored in `gr.State()` with session metadata
-3. First question rendered as bot message, sidebar populated
+1. Candidate lands → sees user ID form (chat panel and sidebar hidden)
+2. On submit → user ID form disappears, chat panel + sidebar appear. New `InterviewOrchestrator` created, stored in `gr.State()` with session metadata (user ID, session UUID)
+3. First question rendered as bot message, sidebar populated with initial progress
 4. Interview loop runs via turn handler callback
-5. When all questions done → summary message, input disabled
+5. When all questions done → summary message in chat, input textbox disabled
 
 **Concurrent sessions:** Gradio handles natively. Each browser session gets independent `gr.State()` with its own orchestrator. No shared mutable state between sessions.
 
