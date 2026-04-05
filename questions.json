@@ -2,16 +2,15 @@
   "interview_id": "it-skill-eval-v1",
   "topics": [
     {
+      "topic_id": "sql",
       "topic_name": "SQL Basics",
       "questions": [
         {
-          "id": "q1",
           "text": "How do you find unique values in a column?",
           "criteria": "Must use the DISTINCT keyword.",
           "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly."
         },
         {
-          "id": "q2",
           "text": "What is the difference between an INNER JOIN and a LEFT JOIN?",
           "criteria": "Must explain that INNER JOIN returns only matching rows, while LEFT JOIN returns all rows from the left table regardless of matches.",
           "hint_guidelines": "Ask what happens to rows in the first table if there is no matching entry in the second."
@@ -19,10 +18,10 @@
       ]
     },
     {
+      "topic_id": "python",
       "topic_name": "Python Basics",
       "questions": [
         {
-          "id": "q3",
           "text": "How do you handle exceptions in Python to prevent the program from crashing?",
           "criteria": "Must explicitly mention 'try' and 'except' blocks. Note: 'catch' is incorrect syntax in Python.",
           "hint_guidelines": "Ask about the block-based structure used to catch errors during execution."
