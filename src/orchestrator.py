@@ -5,7 +5,7 @@ class InterviewOrchestrator:
         self.attempts = 0  # Hint attempts (drives force-skip logic)
         self.max_attempts = max_attempts
         self.history = []
-        
+
         # New State
         self.turns_in_question = 0
         self.hints_given = 0
@@ -33,10 +33,10 @@ class InterviewOrchestrator:
                 "total_turns": self.turns_in_question,
                 "hints_used": self.hints_given,
                 "clarifications_used": self.clarifications_requested,
-                "was_force_skipped": command == "PROMPT_SKIP"
+                "was_force_skipped": command == "PROMPT_SKIP",
             }
             self.question_summaries.append(summary)
-            
+
             self.current_idx += 1
             self.turns_in_question = 0
             self.hints_given = 0
@@ -45,7 +45,7 @@ class InterviewOrchestrator:
             self.evaluation_history = []
         elif command == "GIVE_HINT":
             self.hints_given += 1
-            self.attempts += 1 # maintain for should_force_skip
+            self.attempts += 1  # maintain for should_force_skip
         elif command == "CLARIFY":
             self.clarifications_requested += 1
 
