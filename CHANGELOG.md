@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-04-05
+
+### Added
+- **JSON Schema Validation**: `questions.json` is now validated against `schemas/questions.schema.json` (Draft 2020-12) at load time. Structural errors (missing fields, extra properties) are caught with clear messages.
+- **Topic IDs**: Each topic now has a `topic_id` field (lowercase, alphanumeric + dashes) used to derive question IDs.
+- **Computed Question IDs**: Question IDs are no longer manually assigned. They are computed from `topic_id` + running number (e.g., `sql-1`, `sql-2`, `python-1`).
+- **Project Configuration**: Added `CLAUDE.md` with project structure and `uv run` instructions. Added `MODEL` to `.env.example`.
+
+### Changed
+- **jsonschema**: Promoted from transitive to direct dependency in `pyproject.toml`.
+
+### Removed
+- **Manual Question IDs**: Removed `id` field from question objects in `questions.json`.
+
 ## [0.3.2] - 2026-04-04
 
 ### Added
