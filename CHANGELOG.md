@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-04-05
+
+### Added
+- **CLI Arguments**: `main.py` now accepts `--questions`, `--model`, `--base-url`, and `--no-mlflow` flags to override `.env` defaults without editing files.
+- **Thai Question Set**: Added `questions_th.json` — a Thai translation of the default question set for testing.
+
 ## [0.3.3] - 2026-04-05
 
 ### Added

@@ -1,3 +1,4 @@
+import argparse
 import dspy
 import os
 import sys
@@ -13,14 +14,41 @@ VERSION = "0.3.2"
 MAX_RETRIES = 2
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Assessment Bot — interactive interview runner")
+    parser.add_argument(
+        "--questions",
+        default="questions.json",
+        help="Path to questions JSON file (default: questions.json)",
+    )
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="LLM model identifier (overrides MODEL from .env, e.g. openai/gpt-4o)",
+    )
+    parser.add_argument(
+        "--base-url",
+        default=None,
+        help="OpenAI-compatible API base URL (overrides OPENAI_BASE_URL from .env)",
+    )
+    parser.add_argument(
+        "--no-mlflow",
+        action="store_true",
+        help="Disable MLflow logging",
+    )
+    return parser.parse_args()
+
+
 def main():
+    args = _parse_args()
+
     # Setup
-    mlflow.set_experiment("Interview_Bot")
+    if not args.no_mlflow:
+        mlflow.set_experiment("Interview_Bot")
+        git_commit = get_git_commit(".") or "local-dev"
+        mlflow.set_active_model(name=f"assessment-bot-{git_commit[:8]}")
+        mlflow.dspy.autolog()
 
-    git_commit = get_git_commit(".") or "local-dev"
-    mlflow.set_active_model(name=f"assessment-bot-{git_commit[:8]}")
-
-    mlflow.dspy.autolog()
     load_dotenv()
 
     # User and Session IDs
@@ -29,12 +57,12 @@ def main():
 
     # Ensure OPENAI_API_KEY is in environment
     api_key = os.getenv("OPENAI_API_KEY")
-    base_url = os.getenv("OPENAI_BASE_URL")
-
     if not api_key:
         sys.exit("Error: OPENAI_API_KEY not found. Set it in .env or environment.")
 
-    model = os.getenv("MODEL", "openai/qwen3.5:4b")
+    base_url = args.base_url or os.getenv("OPENAI_BASE_URL")
+    model = args.model or os.getenv("MODEL", "openai/qwen3.5:4b")
+
     lm_args = {"api_key": api_key}
     if base_url:
         lm_args["api_base"] = base_url  # litellm uses api_base for custom endpoints
@@ -42,7 +70,7 @@ def main():
     lm = dspy.LM(model, **lm_args)
     dspy.configure(lm=lm)
 
-    data = load_questions("questions.json")
+    data = load_questions(args.questions)
     all_questions = flatten_questions(data)
 
     orc = InterviewOrchestrator(all_questions)
@@ -62,26 +90,27 @@ def main():
 
             user_input = input("You: ")
 
-            # Wrap bot call in MLflow span for trace metadata
-            with mlflow.start_span(name=f"{q['topic_name']}: {q['id']}") as span:
-                span.set_inputs({
-                    "question": q["text"],
-                    "user_input": user_input,
-                    "attempt_number": orc.attempts,
-                })
-
+            if args.no_mlflow:
                 result = _call_bot_with_retry(bot, q, orc, user_input)
+            else:
+                with mlflow.start_span(name=f"{q['topic_name']}: {q['id']}") as span:
+                    span.set_inputs({
+                        "question": q["text"],
+                        "user_input": user_input,
+                        "attempt_number": orc.attempts,
+                    })
 
-                span.set_outputs(result.action.model_dump())
+                    result = _call_bot_with_retry(bot, q, orc, user_input)
 
-                # Update trace metadata - must be within span context
-                mlflow.update_current_trace(
-                    tags={"version": VERSION, "model": model},
-                    metadata={
-                        "mlflow.trace.user": user_id,
-                        "mlflow.trace.session": session_id,
-                    }
-                )
+                    span.set_outputs(result.action.model_dump())
+
+                    mlflow.update_current_trace(
+                        tags={"version": VERSION, "model": model},
+                        metadata={
+                            "mlflow.trace.user": user_id,
+                            "mlflow.trace.session": session_id,
+                        }
+                    )
 
             action = result.action
             command = action.command
