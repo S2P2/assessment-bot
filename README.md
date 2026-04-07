@@ -47,8 +47,24 @@ A terminal-based IT skill interview chatbot built with the **DSPy framework**. I
 
 ### Run the Interview Bot
 ```bash
+# Default (questions.json, model from .env)
 uv run python main.py
+
+# Thai questions with a different model
+uv run python main.py --questions questions_th.json --model openai/gpt-4o
+
+# Quick test without MLflow
+uv run python main.py --questions questions_th.json --no-mlflow
 ```
+
+### CLI Arguments
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--questions` | `questions.json` | Path to questions JSON file |
+| `--model` | `$MODEL` from .env | LLM model identifier (e.g. `openai/gpt-4o`) |
+| `--base-url` | `$OPENAI_BASE_URL` from .env | OpenAI-compatible API base URL |
+| `--no-mlflow` | off | Disable MLflow logging |
 
 ### View MLflow Traces
 Every interview turn is automatically logged. To view the traces and reasoning:
