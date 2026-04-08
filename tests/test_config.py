@@ -19,16 +19,14 @@ def test_load_config_reads_env():
 
 def test_load_config_defaults_model():
     env = {"OPENAI_API_KEY": "test-key-123"}
-    with patch.dict(os.environ, env, clear=False), \
-         patch("src.config.load_dotenv"):
+    with patch.dict(os.environ, env, clear=False), patch("src.config.load_dotenv"):
         os.environ.pop("MODEL", None)
         config = load_config()
     assert config["model"] == "openai/qwen3.5:4b"
 
 
 def test_load_config_missing_api_key():
-    with patch.dict(os.environ, {}, clear=True), \
-         patch("src.config.load_dotenv"):
+    with patch.dict(os.environ, {}, clear=True), patch("src.config.load_dotenv"):
         with pytest.raises(SystemExit, match="OPENAI_API_KEY"):
             load_config()
 

@@ -45,11 +45,13 @@ def main():
 
             # Wrap bot call in MLflow span for trace metadata
             with mlflow.start_span(name=f"{q['topic_name']}: {q['id']}") as span:
-                span.set_inputs({
-                    "question": q["text"],
-                    "user_input": user_input,
-                    "attempt_number": orc.attempts,
-                })
+                span.set_inputs(
+                    {
+                        "question": q["text"],
+                        "user_input": user_input,
+                        "attempt_number": orc.attempts,
+                    }
+                )
 
                 result = _call_bot_with_retry(bot, q, orc, user_input)
 
@@ -61,7 +63,7 @@ def main():
                     metadata={
                         "mlflow.trace.user": user_id,
                         "mlflow.trace.session": session_id,
-                    }
+                    },
                 )
 
             action = result.action

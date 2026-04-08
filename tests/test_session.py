@@ -27,8 +27,20 @@ def _clear_registry():
 
 def _sample_questions():
     return [
-        {"id": "sql-1", "text": "Q1", "criteria": "c1", "hint_guidelines": "h1", "topic_name": "SQL"},
-        {"id": "py-1", "text": "Q2", "criteria": "c2", "hint_guidelines": "h2", "topic_name": "Python"},
+        {
+            "id": "sql-1",
+            "text": "Q1",
+            "criteria": "c1",
+            "hint_guidelines": "h1",
+            "topic_name": "SQL",
+        },
+        {
+            "id": "py-1",
+            "text": "Q2",
+            "criteria": "c2",
+            "hint_guidelines": "h2",
+            "topic_name": "Python",
+        },
     ]
 
 
@@ -76,7 +88,9 @@ def test_save_and_resume_session(tmp_path, monkeypatch):
 
     resumed_data = get_session(resumed_uuid)
     assert resumed_data.orchestrator.current_idx == 1
-    assert resumed_data.orchestrator.question_summaries[0]["final_evaluation"] == "correct"
+    assert (
+        resumed_data.orchestrator.question_summaries[0]["final_evaluation"] == "correct"
+    )
 
 
 def test_resume_session_no_existing_file(tmp_path, monkeypatch):

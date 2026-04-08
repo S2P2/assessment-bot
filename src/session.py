@@ -134,12 +134,14 @@ def _serialize_orchestrator(orc: InterviewOrchestrator) -> dict:
 
 
 def _deserialize_orchestrator(
-    state: dict, questions: list[dict],
+    state: dict,
+    questions: list[dict],
 ) -> Optional[InterviewOrchestrator]:
     """Rebuild orchestrator from saved state + fresh questions."""
     try:
         orc = InterviewOrchestrator(
-            questions, max_attempts=state.get("max_attempts", 2),
+            questions,
+            max_attempts=state.get("max_attempts", 2),
         )
         orc.current_idx = state["current_idx"]
         orc.attempts = state["attempts"]
