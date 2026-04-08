@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-09
+
+### Added
+- **Gradio 6 Web UI**: Candidate-facing interview interface at `web.py` with sidebar progress panel and chat area.
+- **Session Persistence**: JSON file-based session storage (`sessions/`) with server-side registry. Candidates can resume interrupted interviews by re-entering their user ID.
+- **Server-Side Security**: Question criteria, hint guidelines, and evaluation details are kept in a server-side registry and never sent to the browser via `gr.State()`.
+- **Shared Config Module**: Extracted `src/config.py` from `main.py` with `load_config()`, `init_lm()`, and `load_interview_data()` — shared by CLI and web app.
+- **Integration Tests**: 21 new tests covering config, session persistence, web UI helpers, security, and full interview lifecycle.
+
+### Changed
+- **main.py**: Refactored to use shared `src/config.py` module. No behavior change.
+- **Version**: Bumped from 0.3.3 to 0.4.0.
+
+### Dependencies
+- Added `gradio>=6.0`.
+
+### Known Issues
+- Session files proliferate on server restart (tracked for fix).
+- User answer doesn't appear in chat until LLM responds (needs chained callbacks).
+- No Send button on chat textbox (Enter key only).
+- Textbox not disabled when interview completes.
+- Sidebar history items render on same line.
+
 ## [0.3.3] - 2026-04-05
 
 ### Added
