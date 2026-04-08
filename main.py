@@ -1,11 +1,7 @@
-import dspy
-import os
-import sys
 import mlflow
 import uuid
-from dotenv import load_dotenv
 from mlflow.utils.git_utils import get_git_commit
-from src.data import load_questions, flatten_questions
+from src.config import load_config, init_lm, load_interview_data
 from src.orchestrator import InterviewOrchestrator
 from src.modules import InterviewBot
 
@@ -21,29 +17,14 @@ def main():
     mlflow.set_active_model(name=f"assessment-bot-{git_commit[:8]}")
 
     mlflow.dspy.autolog()
-    load_dotenv()
+    config = load_config()
+    init_lm(config)
 
     # User and Session IDs
     user_id = input("Enter your Name/Candidate ID: ") or "anonymous"
     session_id = str(uuid.uuid4())
 
-    # Ensure OPENAI_API_KEY is in environment
-    api_key = os.getenv("OPENAI_API_KEY")
-    base_url = os.getenv("OPENAI_BASE_URL")
-
-    if not api_key:
-        sys.exit("Error: OPENAI_API_KEY not found. Set it in .env or environment.")
-
-    model = os.getenv("MODEL", "openai/qwen3.5:4b")
-    lm_args = {"api_key": api_key}
-    if base_url:
-        lm_args["api_base"] = base_url  # litellm uses api_base for custom endpoints
-
-    lm = dspy.LM(model, **lm_args)
-    dspy.configure(lm=lm)
-
-    data = load_questions("questions.json")
-    all_questions = flatten_questions(data)
+    data, all_questions = load_interview_data("questions.json")
 
     orc = InterviewOrchestrator(all_questions)
     bot = InterviewBot()
@@ -76,7 +57,7 @@ def main():
 
                 # Update trace metadata - must be within span context
                 mlflow.update_current_trace(
-                    tags={"version": VERSION, "model": model},
+                    tags={"version": VERSION, "model": config["model"]},
                     metadata={
                         "mlflow.trace.user": user_id,
                         "mlflow.trace.session": session_id,
