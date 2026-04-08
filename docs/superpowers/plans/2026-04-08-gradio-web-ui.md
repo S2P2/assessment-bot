@@ -806,16 +806,16 @@ def _build_history(orc):
 def _build_ui():
     with gr.Blocks() as app:
         # --- Pre-interview state (user ID form) ---
-        with gr.Group(visible=True) as login_group:
+        with gr.Column(visible=True) as login_group:
             gr.Markdown("## Assessment Bot")
             user_id_input = gr.Textbox(
                 label="Enter your Name or Candidate ID",
                 placeholder="e.g., john.doe",
-                submit_btn=True,
             )
+            start_btn = gr.Button("Start Interview", variant="primary")
 
         # --- Interview state (sidebar + chat) ---
-        with gr.Group(visible=False) as interview_group:
+        with gr.Column(visible=False) as interview_group:
             with gr.Sidebar():
                 gr.Markdown("### Progress")
                 sidebar_topic = gr.Markdown("**Topic:** -")
@@ -830,7 +830,6 @@ def _build_ui():
             msg_input = gr.Textbox(
                 placeholder="Type your answer...",
                 show_label=False,
-                submit_btn=True,
             )
 
         # State: display-safe only (session UUID + user ID)
@@ -838,13 +837,13 @@ def _build_ui():
 
         # --- Event handlers ---
 
-        def start_interview(user_id, request: gr.Request):
+        def start_interview(user_id):
             """Handle user ID submission. Create or resume session."""
             if not user_id or not user_id.strip():
                 gr.Warning("Please enter your name or candidate ID.")
                 return (
-                    gr.Group(visible=True),
-                    gr.Group(visible=False),
+                    gr.Column(visible=True),
+                    gr.Column(visible=False),
                     None,
                     [],
                     "",
@@ -886,17 +885,19 @@ def _build_ui():
             sidebar = _build_sidebar(orc)
 
             return (
-                gr.Group(visible=False),
-                gr.Group(visible=True),
+                gr.Column(visible=False),
+                gr.Column(visible=True),
                 {"session_uuid": session_uuid, "user_id": user_id},
                 messages,
                 *sidebar,
             )
 
-        user_id_input.submit(
-            start_interview,
-            [user_id_input],
-            [
+        # Start interview on button click OR Enter key in the textbox
+        gr.on(
+            triggers=[start_btn.click, user_id_input.submit],
+            fn=start_interview,
+            inputs=[user_id_input],
+            outputs=[
                 login_group,
                 interview_group,
                 session_state,
@@ -1028,7 +1029,7 @@ def _build_ui():
 app = _build_ui()
 
 if __name__ == "__main__":
-    app.launch(api_visibility="private")
+    app.launch(footer_links=["gradio", "settings"])
 ```
 
 - [ ] **Step 2: Verify the app starts**
