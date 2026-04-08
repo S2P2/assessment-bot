@@ -13,6 +13,11 @@ from src.session import (
 
 VERSION = "0.4.0"
 MAX_RETRIES = 2
+_BADGE_MAP = {
+    "correct": "\u2713",
+    "incorrect": "\u2717",
+    "ambiguous": "~",
+}
 
 # --- Startup: load config, init LLM, load questions ---
 config = load_config()
@@ -79,15 +84,10 @@ def _build_history(orc):
         return "_No questions answered yet_"
 
     lines = []
-    badge_map = {
-        "correct": "\u2713",
-        "incorrect": "\u2717",
-        "ambiguous": "~",
-    }
     for summary in orc.question_summaries:
         qid = summary.get("question_id", "?")
         evaluation = summary.get("final_evaluation", "?")
-        badge = badge_map.get(evaluation, "?")
+        badge = _BADGE_MAP.get(evaluation, "?")
         was_skipped = summary.get("was_force_skipped", False)
         label = f"{badge} {qid}"
         if was_skipped:
@@ -271,7 +271,7 @@ def _build_ui():
                             "mlflow.trace.session": session_uuid,
                         },
                     )
-            except RuntimeError as e:
+            except Exception as e:
                 history.append(
                     {
                         "role": "assistant",
@@ -303,12 +303,7 @@ def _build_ui():
             if next_q is None:
                 summary_lines = ["---\n**Interview Complete!**\n"]
                 for s in orc.question_summaries:
-                    badge_map = {
-                        "correct": "\u2713",
-                        "incorrect": "\u2717",
-                        "ambiguous": "~",
-                    }
-                    badge = badge_map.get(s["final_evaluation"], "?")
+                    badge = _BADGE_MAP.get(s["final_evaluation"], "?")
                     summary_lines.append(
                         f"{badge} {s['question_id']}: {s['final_evaluation']}"
                     )
