@@ -100,7 +100,7 @@ Using Gradio 6's `gr.Sidebar()` + `gr.Blocks()`:
 - Question progress (X / Y)
 - Attempt counter (X of 2)
 - History list with evaluation badges (✓ correct, ✗ skipped, ~ ambiguous)
-- "Resume Session" button if a saved session exists for the entered user ID
+- If a saved session exists for the user ID entered at startup, resume is automatic (handled at the ID entry step, not in sidebar)
 
 **No streaming.** Full bot response appears after LLM call completes. A "Thinking..." placeholder shown while waiting.
 
