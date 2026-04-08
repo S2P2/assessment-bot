@@ -46,3 +46,6 @@ mlartifacts/
 .idea/
 *.swp
 *.swo
+
+# Session data
+sessions/
