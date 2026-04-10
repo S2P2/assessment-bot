@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Session file proliferation**: Files now named by user_id instead of UUID — one file per user, no more scanning.
-- **Empty "..." bubble on first turn**: Chained callbacks guard against empty messages.
+- **Empty "..." bubble on interview start**: Suppress Gradio pending indicator with `show_progress="hidden"` on start event.
 - **User answer delayed until LLM responds**: User message appears immediately via split callbacks.
 - **No Send button**: Added Send button next to the chat textbox.
 - **Textbox not disabled when interview completes**: Textbox becomes read-only after interview ends.

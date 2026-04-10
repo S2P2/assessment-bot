@@ -225,6 +225,7 @@ def _build_ui():
                 sidebar_turn,
                 sidebar_history,
             ],
+            show_progress="hidden",
             api_visibility="private",
         )
 

@@ -37,6 +37,7 @@ htmlcov/
 # MLflow
 mlflow.db
 mlartifacts/
+mlruns/
 
 # uv
 # uv.lock is tracked
