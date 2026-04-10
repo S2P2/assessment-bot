@@ -1,19 +1,21 @@
-# DSPy Interview Bot POC (v0.3.2)
+# DSPy Interview Bot POC (v0.4.1)
 
-A terminal-based IT skill interview chatbot built with the **DSPy framework**. It uses a Unified Predictor model with **Chain of Thought** reasoning to evaluate answers and generate responses in a single LLM call, while a Python Orchestrator manages the rigid conversation state.
+An IT skill interview chatbot with both **terminal** and **web UI** interfaces, built with the **DSPy framework**. It uses a Unified Predictor model with **Chain of Thought** reasoning to evaluate answers and generate responses in a single LLM call, while a Python Orchestrator manages the rigid conversation state.
 
-## New in v0.3.1
+## New in v0.4.1
 
-- **Detailed Interaction Tracking**: The `InterviewOrchestrator` now provides granular tracking of `turns_in_question`, `hints_given`, and `clarifications_requested`, allowing for deeper session analytics.
-- **Evaluation History**: The LLM now receives the `last_evaluation` result, providing context for the current turn (e.g., whether the user was just asked to clarify their previous answer).
-- **Session Summaries**: Every question session is summarized into `question_summaries`, capturing final evaluations, total turns, and skip reasons for persistent reporting.
+- **Session file naming**: Files named by user_id instead of UUID — one file per user, no more proliferation on restart.
+- **Chained callbacks**: User messages appear instantly (no waiting for LLM response).
+- **Send button**: Added alongside the chat textbox.
+- **Textbox auto-disable**: Input locks when the interview completes.
+- **Sidebar history**: Each evaluation item renders on its own line.
+- **Path traversal guard**: Session file naming validates user_id to prevent directory traversal.
 
-## New in v0.3.0
+## New in v0.4.0
 
-- **Ambiguity Handling (`CLARIFY`)**: A new command that allows the LLM to ask for more detail when an answer is too vague (e.g., "write good code") without penalizing the candidate's attempt counter.
-- **MLflow Observability**: Native integration with MLflow for automatic tracing of DSPy calls. This captures reasoning steps, inputs, and outputs for every turn.
-- **Topic Awareness**: The bot is now aware of upcoming topics, allowing for smoother transitions (e.g., "Great! Now let's move on to Python Basics").
-- **Improved UI**: To reduce clutter, the full question text is only printed on the first attempt. During hints and clarifications, only the interviewer's nudge is shown.
+- **Gradio 6 Web UI**: Candidate-facing interview interface with sidebar progress panel and chat area.
+- **Session Persistence**: JSON file-based session storage with server-side registry. Candidates can resume interrupted interviews by re-entering their user ID.
+- **Server-Side Security**: Question criteria, hint guidelines, and evaluation details are kept server-side and never sent to the browser.
 
 ## Features
 
@@ -24,6 +26,7 @@ A terminal-based IT skill interview chatbot built with the **DSPy framework**. I
 - **MLflow Tracing**: Every turn is traced with user/session metadata and named spans (`{topic}: {question_id}`) for easy filtering.
 - **Resilient**: Retries on transient LLM failures, exits cleanly on Ctrl+C, and gives clear error messages for missing config or data files.
 - **Modern Tooling**: Managed with `uv` for fast, reproducible Python environments.
+- **Web UI**: Gradio 6 interface with sidebar progress, chat area, session persistence, and resumable interviews.
 
 ## Setup
 
@@ -45,7 +48,13 @@ A terminal-based IT skill interview chatbot built with the **DSPy framework**. I
 
 ## Usage
 
-### Run the Interview Bot
+### Run the Web UI
+```bash
+uv run python web.py
+```
+Then navigate to `http://localhost:7860` in your browser.
+
+### Run the CLI Interview
 ```bash
 uv run python main.py
 ```
@@ -55,7 +64,7 @@ Every interview turn is automatically logged. To view the traces and reasoning:
 ```bash
 uv run mlflow ui
 ```
-Then navigate to `http://localhost:5000` to see the "Interview_Bot" experiment. Traces include version metadata for filtering across releases.
+Then navigate to `http://localhost:5000` to see the "Interview_Bot" experiment (CLI) or "Interview_Bot_Web" (web UI). Traces include version metadata for filtering across releases.
 
 ## Testing
 
@@ -71,9 +80,12 @@ PYTHONPATH=. uv run pytest
 
 ## Architecture
 
-- `main.py`: Entry point, CLI loop, MLflow configuration, and retry logic.
+- `main.py`: CLI entry point with MLflow configuration and retry logic.
+- `web.py`: Gradio 6 web UI with sidebar, chat, session management, and MLflow tracing.
 - `src/modules.py`: DSPy modules (using `ChainOfThought`).
 - `src/signatures.py`: DSPy signatures defining the I/O schema and constraints.
 - `src/orchestrator.py`: Python state management (attempts, topics, history).
 - `src/schema.py`: Pydantic models for structured LLM interaction.
 - `src/data.py`: Question loading with validation, and `flatten_questions()` for topic association.
+- `src/session.py`: JSON file-based session persistence with server-side registry.
+- `src/config.py`: Shared config loading, LLM initialization, and interview data loading.
