@@ -147,7 +147,7 @@ def test_full_interview_lifecycle(tmp_path, monkeypatch):
     assert orc.get_current_question() is None
 
     # Verify session file
-    with open(tmp_path / f"{uuid}.json") as f:
+    with open(tmp_path / "user1.json") as f:
         saved = json.load(f)
     assert saved["orchestrator"]["current_idx"] == 2
     assert len(saved["orchestrator"]["question_summaries"]) == 2

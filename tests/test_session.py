@@ -107,7 +107,7 @@ def test_remove_session(tmp_path, monkeypatch):
     save_session(uuid)
 
     # Verify file exists
-    assert (tmp_path / f"{uuid}.json").exists()
+    assert (tmp_path / "user1.json").exists()
 
     remove_session(uuid)
 
@@ -116,7 +116,7 @@ def test_remove_session(tmp_path, monkeypatch):
         get_session(uuid)
 
     # File gone
-    assert not (tmp_path / f"{uuid}.json").exists()
+    assert not (tmp_path / "user1.json").exists()
 
 
 def test_session_file_has_no_sensitive_data(tmp_path, monkeypatch):
@@ -126,7 +126,7 @@ def test_session_file_has_no_sensitive_data(tmp_path, monkeypatch):
     uuid = create_session("user1", questions, "test-interview")
     save_session(uuid)
 
-    with open(tmp_path / f"{uuid}.json") as f:
+    with open(tmp_path / "user1.json") as f:
         saved = json.load(f)
 
     # Must NOT contain criteria or hint_guidelines
@@ -142,7 +142,7 @@ def test_session_file_format(tmp_path, monkeypatch):
     uuid = create_session("user1", _sample_questions(), "test-interview")
     save_session(uuid)
 
-    with open(tmp_path / f"{uuid}.json") as f:
+    with open(tmp_path / "user1.json") as f:
         saved = json.load(f)
 
     assert saved["uuid"] == uuid

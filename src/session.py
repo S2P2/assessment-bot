@@ -52,36 +52,31 @@ def resume_session(user_id: str, questions: list[dict]) -> Optional[str]:
     if user_id in _user_index:
         return _user_index[user_id]
 
-    if not SESSIONS_DIR.exists():
+    path = SESSIONS_DIR / f"{user_id}.json"
+    if not path.exists():
         return None
 
-    for path in SESSIONS_DIR.glob("*.json"):
-        try:
-            with open(path) as f:
-                saved = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            continue
+    try:
+        with open(path) as f:
+            saved = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return None
 
-        if saved.get("user_id") != user_id:
-            continue
+    session_uuid = saved["uuid"]
+    orc = _deserialize_orchestrator(saved["orchestrator"], questions)
+    if orc is None:
+        return None
 
-        session_uuid = saved["uuid"]
-        orc = _deserialize_orchestrator(saved["orchestrator"], questions)
-        if orc is None:
-            continue
-
-        data = SessionData(
-            user_id=user_id,
-            interview_id=saved["interview_id"],
-            orchestrator=orc,
-            created_at=saved["created_at"],
-            updated_at=saved["updated_at"],
-        )
-        _registry[session_uuid] = data
-        _user_index[user_id] = session_uuid
-        return session_uuid
-
-    return None
+    data = SessionData(
+        user_id=user_id,
+        interview_id=saved["interview_id"],
+        orchestrator=orc,
+        created_at=saved["created_at"],
+        updated_at=saved["updated_at"],
+    )
+    _registry[session_uuid] = data
+    _user_index[user_id] = session_uuid
+    return session_uuid
 
 
 def get_session(uuid: str) -> SessionData:
@@ -103,16 +98,18 @@ def save_session(uuid: str) -> None:
         "updated_at": data.updated_at,
         "orchestrator": _serialize_orchestrator(data.orchestrator),
     }
-    path = SESSIONS_DIR / f"{uuid}.json"
+    path = SESSIONS_DIR / f"{data.user_id}.json"
     path.write_text(json.dumps(payload, indent=2))
 
 
 def remove_session(uuid: str) -> None:
     """Remove session from registry and delete disk file."""
     data = _registry.pop(uuid, None)
-    if data and data.user_id in _user_index:
+    if data is None:
+        return
+    if data.user_id in _user_index:
         del _user_index[data.user_id]
-    path = SESSIONS_DIR / f"{uuid}.json"
+    path = SESSIONS_DIR / f"{data.user_id}.json"
     if path.exists():
         path.unlink()
 
