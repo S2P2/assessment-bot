@@ -102,6 +102,14 @@ def _build_history(orc):
     return "\n".join(lines)
 
 
+def submit_answer(message, history, state):
+    """Append user message to chat. Returns immediately."""
+    if state is None or not message or not message.strip():
+        return history, ""
+    history.append({"role": "user", "content": message})
+    return history, ""
+
+
 # --- Gradio App ---
 
 
@@ -129,10 +137,13 @@ def _build_ui():
                 sidebar_history = gr.Markdown("_No questions answered yet_")
 
             chatbot = gr.Chatbot(height=500)
-            msg_input = gr.Textbox(
-                placeholder="Type your answer...",
-                show_label=False,
-            )
+            with gr.Row():
+                msg_input = gr.Textbox(
+                    placeholder="Type your answer...",
+                    show_label=False,
+                    scale=9,
+                )
+                send_btn = gr.Button("Send", variant="primary", scale=1)
 
         # State: display-safe only (session UUID + user ID)
         session_state = gr.State(None)
@@ -217,10 +228,10 @@ def _build_ui():
             api_visibility="private",
         )
 
-        def respond(message, history, state):
-            """Handle candidate answer submission."""
+        def process_response(history, state):
+            """Run LLM and append bot response. Updates sidebar."""
             if state is None:
-                return history, message, *[""] * 5
+                return history, gr.Textbox(interactive=True), *[""] * 5
 
             session_uuid = state["session_uuid"]
             try:
@@ -232,7 +243,7 @@ def _build_ui():
                         "content": "Session lost. Please refresh and re-enter your ID to resume.",
                     }
                 )
-                return history, "", *[""] * 5
+                return history, gr.Textbox(interactive=True), *[""] * 5
 
             orc = data.orchestrator
             q = orc.get_current_question()
@@ -244,10 +255,10 @@ def _build_ui():
                         "content": "Interview is already complete.",
                     }
                 )
-                return history, "", *_build_sidebar(orc)
+                return history, gr.Textbox(interactive=False), *_build_sidebar(orc)
 
-            # Add user message
-            history.append({"role": "user", "content": message})
+            # Get user message (last item in history)
+            user_message = history[-1]["content"]
 
             # Call bot with retry
             try:
@@ -255,12 +266,12 @@ def _build_ui():
                     span.set_inputs(
                         {
                             "question": q["text"],
-                            "user_input": message,
+                            "user_input": user_message,
                             "attempt_number": orc.attempts,
                         }
                     )
 
-                    result = _call_bot_with_retry(bot, q, orc, message)
+                    result = _call_bot_with_retry(bot, q, orc, user_message)
 
                     span.set_outputs(result.action.model_dump())
 
@@ -278,7 +289,7 @@ def _build_ui():
                         "content": f"Error: {e}. Please try your answer again.",
                     }
                 )
-                return history, "", *_build_sidebar(orc)
+                return history, gr.Textbox(interactive=True), *_build_sidebar(orc)
 
             action = result.action
             command = action.command
@@ -288,7 +299,7 @@ def _build_ui():
                 command = "PROMPT_SKIP"
 
             # Record turn
-            orc.history.append(f"User: {message}")
+            orc.history.append(f"User: {user_message}")
             orc.history.append(f"Interviewer: {action.response}")
             orc.record_turn(command, action.evaluation)
 
@@ -322,13 +333,20 @@ def _build_ui():
                     }
                 )
 
+            interactive = next_q is not None
             sidebar = _build_sidebar(orc)
-            return history, "", *sidebar
+            return history, gr.Textbox(interactive=interactive), *sidebar
 
-        msg_input.submit(
-            respond,
-            [msg_input, chatbot, session_state],
-            [
+        gr.on(
+            triggers=[send_btn.click, msg_input.submit],
+            fn=submit_answer,
+            inputs=[msg_input, chatbot, session_state],
+            outputs=[chatbot, msg_input],
+            api_visibility="private",
+        ).then(
+            fn=process_response,
+            inputs=[chatbot, session_state],
+            outputs=[
                 chatbot,
                 msg_input,
                 sidebar_topic,

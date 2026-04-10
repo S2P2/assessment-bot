@@ -16,7 +16,7 @@ from src.session import (
     resume_session,
     save_session,
 )
-from web import _build_history, _build_sidebar
+from web import _build_history, _build_sidebar, submit_answer
 
 
 @pytest.fixture(autouse=True)
@@ -179,3 +179,43 @@ def test_resume_preserves_history(tmp_path, monkeypatch):
     assert "User: my answer" in resumed.orchestrator.history
     assert "Interviewer: Good response" in resumed.orchestrator.history
     assert resumed.orchestrator.attempts == 1
+
+
+def test_submit_answer_empty_message():
+    """Empty messages are rejected — no bubble added."""
+    history = []
+    result_history, result_msg = submit_answer(
+        "", history, {"session_uuid": "abc", "user_id": "u1"}
+    )
+    assert result_history == []
+    assert result_msg == ""
+
+
+def test_submit_answer_whitespace_message():
+    """Whitespace-only messages are rejected."""
+    history = []
+    result_history, result_msg = submit_answer(
+        "   ", history, {"session_uuid": "abc", "user_id": "u1"}
+    )
+    assert result_history == []
+    assert result_msg == ""
+
+
+def test_submit_answer_appends_user_message():
+    """Valid message appends to history and clears input."""
+    history = []
+    result_history, result_msg = submit_answer(
+        "SELECT * FROM users", history, {"session_uuid": "abc", "user_id": "u1"}
+    )
+    assert len(result_history) == 1
+    assert result_history[0]["role"] == "user"
+    assert result_history[0]["content"] == "SELECT * FROM users"
+    assert result_msg == ""
+
+
+def test_submit_answer_no_state():
+    """No session state returns unchanged history."""
+    history = []
+    result_history, result_msg = submit_answer("hello", history, None)
+    assert result_history == []
+    assert result_msg == ""
