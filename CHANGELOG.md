@@ -7,11 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.4] - 2026-04-05
+## [0.4.1] - 2026-04-10
+
+### Fixed
+- **Session file proliferation**: Files now named by user_id instead of UUID — one file per user, no more scanning.
+- **Empty "..." bubble on interview start**: Suppress Gradio pending indicator with `show_progress="hidden"` on start event.
+- **User answer delayed until LLM responds**: User message appears immediately via split callbacks.
+- **No Send button**: Added Send button next to the chat textbox.
+- **Textbox not disabled when interview completes**: Textbox becomes read-only after interview ends.
+- **Sidebar history items on same line**: History now renders as markdown list with one item per line.
+
+### Security
+- **Path traversal guard**: Session file naming validates user_id to prevent directory traversal attacks.
+
+## [0.4.0] - 2026-04-09
 
 ### Added
+- **Gradio 6 Web UI**: Candidate-facing interview interface at `web.py` with sidebar progress panel and chat area.
+- **Session Persistence**: JSON file-based session storage (`sessions/`) with server-side registry. Candidates can resume interrupted interviews by re-entering their user ID.
+- **Server-Side Security**: Question criteria, hint guidelines, and evaluation details are kept in a server-side registry and never sent to the browser via `gr.State()`.
+- **Shared Config Module**: Extracted `src/config.py` from `main.py` with `load_config()`, `init_lm()`, and `load_interview_data()` — shared by CLI and web app.
+- **Integration Tests**: 21 new tests covering config, session persistence, web UI helpers, security, and full interview lifecycle.
 - **CLI Arguments**: `main.py` now accepts `--questions`, `--model`, `--base-url`, and `--no-mlflow` flags to override `.env` defaults without editing files.
 - **Thai Question Set**: Added `questions_th.json` — a Thai translation of the default question set for testing.
+
+### Changed
+- **main.py**: Refactored to use shared `src/config.py` module. No behavior change.
+- **Version**: Bumped from 0.3.3 to 0.4.0.
+
+### Dependencies
+- Added `gradio>=6.0`.
 
 ## [0.3.3] - 2026-04-05
 

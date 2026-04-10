@@ -37,6 +37,7 @@ htmlcov/
 # MLflow
 mlflow.db
 mlartifacts/
+mlruns/
 
 # uv
 # uv.lock is tracked
@@ -46,3 +47,6 @@ mlartifacts/
 .idea/
 *.swp
 *.swo
+
+# Session data
+sessions/
