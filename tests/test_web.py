@@ -6,6 +6,7 @@ sidebar building) without launching a real Gradio server.
 
 import json
 
+import gradio as gr
 import pytest
 
 from src.orchestrator import InterviewOrchestrator
@@ -182,23 +183,15 @@ def test_resume_preserves_history(tmp_path, monkeypatch):
 
 
 def test_submit_answer_empty_message():
-    """Empty messages are rejected — no bubble added."""
-    history = []
-    result_history, result_msg = submit_answer(
-        "", history, {"session_uuid": "abc", "user_id": "u1"}
-    )
-    assert result_history == []
-    assert result_msg == ""
+    """Empty messages are rejected — returns gr.skip()."""
+    result = submit_answer("", [], {"session_uuid": "abc", "user_id": "u1"})
+    assert result == gr.skip()
 
 
 def test_submit_answer_whitespace_message():
-    """Whitespace-only messages are rejected."""
-    history = []
-    result_history, result_msg = submit_answer(
-        "   ", history, {"session_uuid": "abc", "user_id": "u1"}
-    )
-    assert result_history == []
-    assert result_msg == ""
+    """Whitespace-only messages are rejected — returns gr.skip()."""
+    result = submit_answer("   ", [], {"session_uuid": "abc", "user_id": "u1"})
+    assert result == gr.skip()
 
 
 def test_submit_answer_appends_user_message():
@@ -214,18 +207,15 @@ def test_submit_answer_appends_user_message():
 
 
 def test_submit_answer_no_state():
-    """No session state returns unchanged history."""
-    history = []
-    result_history, result_msg = submit_answer("hello", history, None)
-    assert result_history == []
-    assert result_msg == ""
+    """No session state returns gr.skip()."""
+    result = submit_answer("hello", [], None)
+    assert result == gr.skip()
 
 
-def test_submit_answer_returns_early_on_empty_does_not_mutate():
-    """Empty message leaves history untouched — process_response guard relies on this."""
+def test_submit_answer_returns_skip_does_not_mutate():
+    """Empty message leaves history untouched — returns gr.skip() instead."""
     history = [{"role": "assistant", "content": "Hello"}]
-    result_history, result_msg = submit_answer(
-        "", history, {"session_uuid": "abc", "user_id": "u1"}
-    )
-    assert len(result_history) == 1
-    assert result_history[0]["role"] == "assistant"
+    result = submit_answer("", history, {"session_uuid": "abc", "user_id": "u1"})
+    assert result == gr.skip()
+    assert len(history) == 1
+    assert history[0]["role"] == "assistant"

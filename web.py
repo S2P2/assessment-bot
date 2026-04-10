@@ -105,7 +105,7 @@ def _build_history(orc):
 def submit_answer(message, history, state):
     """Append user message to chat. Returns immediately."""
     if state is None or not message or not message.strip():
-        return history, ""
+        return gr.skip()
     history.append({"role": "user", "content": message})
     return history, ""
 
