@@ -80,8 +80,8 @@ def test_build_history_with_summaries():
     orc = InterviewOrchestrator(questions)
     orc.record_turn("NEXT_QUESTION", "correct")
     result = _build_history(orc)
-    assert "\u2713 sql-1" in result
-    assert "py-1" in result  # next question shown as current
+    assert "- \u2713 sql-1" in result
+    assert "- \u25cb py-1" in result
 
 
 def test_build_history_skipped():
@@ -93,6 +93,7 @@ def test_build_history_skipped():
     orc.record_turn("PROMPT_SKIP", "incorrect")
     result = _build_history(orc)
     assert "skipped" in result
+    assert result.startswith("-")
 
 
 def test_session_state_no_sensitive_data():

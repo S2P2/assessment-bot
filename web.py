@@ -89,7 +89,7 @@ def _build_history(orc):
         evaluation = summary.get("final_evaluation", "?")
         badge = _BADGE_MAP.get(evaluation, "?")
         was_skipped = summary.get("was_force_skipped", False)
-        label = f"{badge} {qid}"
+        label = f"- {badge} {qid}"
         if was_skipped:
             label += " (skipped)"
         lines.append(label)
@@ -97,7 +97,7 @@ def _build_history(orc):
     # Current question
     q = orc.get_current_question()
     if q:
-        lines.append(f"\u25cb {q['id']} (current)")
+        lines.append(f"- \u25cb {q['id']} (current)")
 
     return "\n".join(lines)
 
