@@ -1,4 +1,5 @@
 import json
+import logging
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -7,8 +8,17 @@ from typing import Optional
 
 from src.orchestrator import InterviewOrchestrator
 
+logger = logging.getLogger(__name__)
+
 SESSIONS_DIR = Path("sessions")
 SESSIONS_DIR.mkdir(exist_ok=True)
+
+
+def _safe_filename(user_id: str) -> str:
+    """Sanitize user_id for use as a filename. Rejects path traversal."""
+    if "/" in user_id or "\\" in user_id or ".." in user_id:
+        raise ValueError(f"Invalid user_id: path traversal detected: {user_id!r}")
+    return user_id
 
 
 @dataclass
@@ -52,7 +62,7 @@ def resume_session(user_id: str, questions: list[dict]) -> Optional[str]:
     if user_id in _user_index:
         return _user_index[user_id]
 
-    path = SESSIONS_DIR / f"{user_id}.json"
+    path = SESSIONS_DIR / f"{_safe_filename(user_id)}.json"
     if not path.exists():
         return None
 
@@ -60,6 +70,7 @@ def resume_session(user_id: str, questions: list[dict]) -> Optional[str]:
         with open(path) as f:
             saved = json.load(f)
     except (json.JSONDecodeError, OSError):
+        logger.warning("Corrupt session file for user %s", user_id)
         return None
 
     session_uuid = saved["uuid"]
@@ -98,7 +109,7 @@ def save_session(uuid: str) -> None:
         "updated_at": data.updated_at,
         "orchestrator": _serialize_orchestrator(data.orchestrator),
     }
-    path = SESSIONS_DIR / f"{data.user_id}.json"
+    path = SESSIONS_DIR / f"{_safe_filename(data.user_id)}.json"
     path.write_text(json.dumps(payload, indent=2))
 
 
@@ -109,7 +120,7 @@ def remove_session(uuid: str) -> None:
         return
     if data.user_id in _user_index:
         del _user_index[data.user_id]
-    path = SESSIONS_DIR / f"{data.user_id}.json"
+    path = SESSIONS_DIR / f"{_safe_filename(data.user_id)}.json"
     if path.exists():
         path.unlink()
 

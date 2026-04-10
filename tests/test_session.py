@@ -5,6 +5,7 @@ import pytest
 from src.orchestrator import InterviewOrchestrator
 from src.session import (
     SessionData,
+    _safe_filename,
     create_session,
     get_session,
     remove_session,
@@ -151,3 +152,25 @@ def test_session_file_format(tmp_path, monkeypatch):
     assert "created_at" in saved
     assert "updated_at" in saved
     assert isinstance(saved["orchestrator"], dict)
+
+
+def test_safe_filename_rejects_path_traversal():
+    with pytest.raises(ValueError):
+        _safe_filename("../etc/passwd")
+    with pytest.raises(ValueError):
+        _safe_filename("../../web")
+    with pytest.raises(ValueError):
+        _safe_filename("user/with/slashes")
+    with pytest.raises(ValueError):
+        _safe_filename("user\\with\\backslashes")
+
+
+def test_safe_filename_accepts_valid_ids():
+    assert _safe_filename("john.doe") == "john.doe"
+    assert _safe_filename("user-123") == "user-123"
+    assert _safe_filename("user_456") == "user_456"
+
+
+def test_remove_session_unknown_uuid(tmp_path, monkeypatch):
+    monkeypatch.setattr("src.session.SESSIONS_DIR", tmp_path)
+    remove_session("nonexistent-uuid")  # should not raise
