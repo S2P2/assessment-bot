@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-04-10
+
+### Fixed
+- **Session file proliferation**: Files now named by user_id instead of UUID — one file per user, no more scanning.
+- **Empty "..." bubble on first turn**: Chained callbacks guard against empty messages.
+- **User answer delayed until LLM responds**: User message appears immediately via split callbacks.
+- **No Send button**: Added Send button next to the chat textbox.
+- **Textbox not disabled when interview completes**: Textbox becomes read-only after interview ends.
+- **Sidebar history items on same line**: History now renders as markdown list with one item per line.
+
+### Security
+- **Path traversal guard**: Session file naming validates user_id to prevent directory traversal attacks.
+
 ## [0.4.0] - 2026-04-09
 
 ### Added
@@ -22,13 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 - Added `gradio>=6.0`.
-
-### Known Issues
-- Session files proliferate on server restart (tracked for fix).
-- User answer doesn't appear in chat until LLM responds (needs chained callbacks).
-- No Send button on chat textbox (Enter key only).
-- Textbox not disabled when interview completes.
-- Sidebar history items render on same line.
 
 ## [0.3.3] - 2026-04-05
 
