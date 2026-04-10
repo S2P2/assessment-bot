@@ -219,3 +219,11 @@ def test_submit_answer_no_state():
     result_history, result_msg = submit_answer("hello", history, None)
     assert result_history == []
     assert result_msg == ""
+
+
+def test_submit_answer_returns_early_on_empty_does_not_mutate():
+    """Empty message leaves history untouched — process_response guard relies on this."""
+    history = [{"role": "assistant", "content": "Hello"}]
+    result_history, result_msg = submit_answer("", history, {"session_uuid": "abc", "user_id": "u1"})
+    assert len(result_history) == 1
+    assert result_history[0]["role"] == "assistant"

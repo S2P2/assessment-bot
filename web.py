@@ -233,6 +233,10 @@ def _build_ui():
             if state is None:
                 return history, gr.Textbox(interactive=True), *[""] * 5
 
+            # Skip if submit_answer rejected the message (empty/whitespace)
+            if not history or history[-1].get("role") != "user":
+                return history, gr.Textbox(interactive=True), *[""] * 5
+
             session_uuid = state["session_uuid"]
             try:
                 data = get_session(session_uuid)
