@@ -11,7 +11,7 @@ from src.session import (
     save_session,
 )
 
-VERSION = "0.4.1"
+VERSION = "0.5.0"
 MAX_RETRIES = 2
 _BADGE_MAP = {
     "correct": "\u2713",

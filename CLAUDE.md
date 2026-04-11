@@ -12,7 +12,10 @@ All Python commands must be run via `uv run`:
 
 - `questions.json` — interview question data (validated against `schemas/questions.schema.json`)
 - `src/data.py` — loads and flattens questions with schema validation
-- `src/orchestrator.py` — interview state machine
+- `src/orchestrator.py` — interview state machine (evaluation-driven)
 - `src/modules.py` / `src/signatures.py` — DSPy interview bot
 - `src/schema.py` — Pydantic models for LLM output
+- `src/session.py` — JSON file-based session persistence
+- `src/config.py` — shared config loading and LLM initialization
 - `main.py` — CLI entry point
+- `web.py` — Gradio 6 web UI

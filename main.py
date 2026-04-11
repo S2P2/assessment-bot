@@ -12,7 +12,9 @@ MAX_RETRIES = 2
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Assessment Bot — interactive interview runner")
+    parser = argparse.ArgumentParser(
+        description="Assessment Bot — interactive interview runner"
+    )
     parser.add_argument(
         "--questions",
         default="questions.json",
