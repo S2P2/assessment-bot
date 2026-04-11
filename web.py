@@ -15,6 +15,7 @@ VERSION = "0.4.1"
 MAX_RETRIES = 2
 _BADGE_MAP = {
     "correct": "\u2713",
+    "partially_correct": "\u2248",
     "incorrect": "\u2717",
     "ambiguous": "~",
 }
@@ -45,7 +46,7 @@ def _call_bot_with_retry(bot, q, orc, user_input):
                 hint_guidelines=q["hint_guidelines"],
                 history=orc.history[-5:],
                 user_input=user_input,
-                attempt_number=orc.attempts,
+                attempt_number=orc.hints_given,
                 last_evaluation=orc.last_evaluation,
                 next_topic=orc.get_next_topic_name(),
             )
@@ -72,7 +73,7 @@ def _build_sidebar(orc):
     return (
         f"**Topic:** {q['topic_name']}",
         f"**Question:** {orc.current_idx + 1} / {len(orc.questions)}",
-        f"**Attempts:** {orc.attempts} / {orc.max_attempts}",
+        f"**Hints:** {orc.hints_given} / {orc.max_hints}",
         f"**Turn:** {orc.turns_in_question + 1}",
         _build_history(orc),
     )
@@ -272,7 +273,7 @@ def _build_ui():
                         {
                             "question": q["text"],
                             "user_input": user_message,
-                            "attempt_number": orc.attempts,
+                            "attempt_number": orc.hints_given,
                         }
                     )
 
@@ -297,16 +298,12 @@ def _build_ui():
                 return history, gr.Textbox(interactive=True), *_build_sidebar(orc)
 
             action = result.action
-            command = action.command
+            evaluation = action.evaluation
 
-            # Orchestrator override
-            if orc.should_force_skip() and command == "GIVE_HINT":
-                command = "PROMPT_SKIP"
-
-            # Record turn
+            # Record turn (force-skip handled inside record_turn)
             orc.history.append(f"User: {user_message}")
             orc.history.append(f"Interviewer: {action.response}")
-            orc.record_turn(command, action.evaluation)
+            orc.record_turn(evaluation)
 
             # Save session
             save_session(session_uuid)
@@ -314,7 +311,11 @@ def _build_ui():
             # Build response
             history.append({"role": "assistant", "content": action.response})
 
-            # Check if interview complete
+            # Check if question advanced (correct or force-skip)
+            advanced = evaluation == "correct" or (
+                orc.question_summaries
+                and orc.question_summaries[-1].get("was_force_skipped")
+            )
             next_q = orc.get_current_question()
             if next_q is None:
                 summary_lines = ["---\n**Interview Complete!**\n"]
@@ -329,8 +330,8 @@ def _build_ui():
                         "content": "\n".join(summary_lines),
                     }
                 )
-            elif command in ("NEXT_QUESTION", "PROMPT_SKIP"):
-                # Show next question
+            elif advanced:
+                # Show next question after correct answer or force-skip
                 history.append(
                     {
                         "role": "assistant",
