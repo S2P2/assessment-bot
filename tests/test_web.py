@@ -63,8 +63,8 @@ def test_build_sidebar_active_question():
 def test_build_sidebar_complete():
     questions = _sample_questions()
     orc = InterviewOrchestrator(questions)
-    orc.record_turn("NEXT_QUESTION", "correct")
-    orc.record_turn("NEXT_QUESTION", "correct")
+    orc.record_turn("correct")
+    orc.record_turn("correct")
     topic, question, attempts, turn, history = _build_sidebar(orc)
 
     assert "Complete" in topic
@@ -79,7 +79,7 @@ def test_build_history_empty():
 def test_build_history_with_summaries():
     questions = _sample_questions()
     orc = InterviewOrchestrator(questions)
-    orc.record_turn("NEXT_QUESTION", "correct")
+    orc.record_turn("correct")
     result = _build_history(orc)
     assert "- \u2713 sql-1" in result
     assert "- \u25cb py-1" in result
@@ -87,11 +87,10 @@ def test_build_history_with_summaries():
 
 def test_build_history_skipped():
     questions = _sample_questions()
-    orc = InterviewOrchestrator(questions, max_attempts=2)
-    orc.record_turn("GIVE_HINT", "incorrect")
-    orc.record_turn("GIVE_HINT", "incorrect")
-    assert orc.should_force_skip()
-    orc.record_turn("PROMPT_SKIP", "incorrect")
+    orc = InterviewOrchestrator(questions, max_hints=2)
+    orc.record_turn("incorrect")
+    orc.record_turn("incorrect")
+    assert orc.current_idx == 1  # force-skipped
     result = _build_history(orc)
     assert "skipped" in result
     assert result.startswith("-")
@@ -130,7 +129,7 @@ def test_full_interview_lifecycle(tmp_path, monkeypatch):
 
     orc.history.append("User: SELECT gets data")
     orc.history.append("Interviewer: Correct!")
-    orc.record_turn("NEXT_QUESTION", "correct")
+    orc.record_turn("correct")
     save_session(uuid)
 
     # Verify progress
@@ -142,7 +141,7 @@ def test_full_interview_lifecycle(tmp_path, monkeypatch):
     orc = data.orchestrator
     orc.history.append("User: A list holds items")
     orc.history.append("Interviewer: Correct!")
-    orc.record_turn("NEXT_QUESTION", "correct")
+    orc.record_turn("correct")
     save_session(uuid)
 
     assert orc.get_current_question() is None
@@ -164,7 +163,7 @@ def test_resume_preserves_history(tmp_path, monkeypatch):
     data = get_session(uuid)
     data.orchestrator.history.append("User: my answer")
     data.orchestrator.history.append("Interviewer: Good response")
-    data.orchestrator.record_turn("GIVE_HINT", "incorrect")
+    data.orchestrator.record_turn("incorrect")
     save_session(uuid)
 
     # Clear and resume
@@ -179,7 +178,7 @@ def test_resume_preserves_history(tmp_path, monkeypatch):
     resumed = get_session(resumed_uuid)
     assert "User: my answer" in resumed.orchestrator.history
     assert "Interviewer: Good response" in resumed.orchestrator.history
-    assert resumed.orchestrator.attempts == 1
+    assert resumed.orchestrator.hints_given == 1
 
 
 def test_submit_answer_empty_message():

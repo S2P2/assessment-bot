@@ -129,8 +129,7 @@ def _serialize_orchestrator(orc: InterviewOrchestrator) -> dict:
     """Serialize orchestrator state. Excludes question data."""
     return {
         "current_idx": orc.current_idx,
-        "attempts": orc.attempts,
-        "max_attempts": orc.max_attempts,
+        "max_hints": orc.max_hints,
         "turns_in_question": orc.turns_in_question,
         "hints_given": orc.hints_given,
         "clarifications_requested": orc.clarifications_requested,
@@ -149,12 +148,11 @@ def _deserialize_orchestrator(
     try:
         orc = InterviewOrchestrator(
             questions,
-            max_attempts=state.get("max_attempts", 2),
+            max_hints=state.get("max_hints", state.get("max_attempts", 2)),
         )
         orc.current_idx = state["current_idx"]
-        orc.attempts = state["attempts"]
         orc.turns_in_question = state["turns_in_question"]
-        orc.hints_given = state["hints_given"]
+        orc.hints_given = state.get("hints_given", state.get("attempts", 0))
         orc.clarifications_requested = state["clarifications_requested"]
         orc.last_evaluation = state["last_evaluation"]
         orc.history = state["history"]

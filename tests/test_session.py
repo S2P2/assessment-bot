@@ -74,7 +74,7 @@ def test_save_and_resume_session(tmp_path, monkeypatch):
 
     # Simulate some interview progress
     data = get_session(uuid)
-    data.orchestrator.record_turn("NEXT_QUESTION", "correct")
+    data.orchestrator.record_turn("correct")
     save_session(uuid)
 
     # Clear registry to simulate server restart
