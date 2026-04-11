@@ -1,0 +1,334 @@
+[
+  {
+    "topic": "SQL Basics",
+    "question": "How do you find unique values in a column?",
+    "criteria": "Must use the DISTINCT keyword.",
+    "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+    "history": [],
+    "user_input": "You use the DISTINCT keyword right after SELECT. For example, SELECT DISTINCT column_name FROM table_name will give you only the unique values from that column, removing any duplicates.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "correct",
+      "reasoning": "The candidate correctly identified the DISTINCT keyword and provided a valid example showing it placed after SELECT. The explanation is clear and accurate.",
+      "response": "That's exactly right. DISTINCT placed after SELECT filters out duplicate rows from the result set. Let's move on to the next question."
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "How do you find unique values in a column?",
+    "criteria": "Must use the DISTINCT keyword.",
+    "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+    "history": [],
+    "user_input": "I think you can use GROUP BY on the column. That groups identical values together so you only see each value once.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "partially_correct",
+      "reasoning": "GROUP BY does produce unique values as a side effect, but the candidate did not mention the DISTINCT keyword which is the standard, direct approach for this task.",
+      "response": "GROUP BY can certainly produce a list of unique values, and that's a valid technique. However, there's a more direct keyword specifically designed for this purpose. Do you know what it is?"
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "How do you find unique values in a column?",
+    "criteria": "Must use the DISTINCT keyword.",
+    "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+    "history": [],
+    "user_input": "You could use a WHERE clause to filter out duplicates I think? Or maybe create a temporary table?",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "incorrect",
+      "reasoning": "Neither a WHERE clause nor a temporary table is the correct approach. WHERE filters rows based on conditions but does not remove duplicates. The candidate did not mention DISTINCT.",
+      "response": "Those approaches wouldn't quite work here. A WHERE clause filters based on conditions but doesn't remove duplicate values. There's a specific SQL keyword that returns only unique values from a column. Think about what you'd add right after SELECT."
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "How do you find unique values in a column?",
+    "criteria": "Must use the DISTINCT keyword.",
+    "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+    "history": [
+      "User: You could use a WHERE clause to filter out duplicates I think? Or maybe create a temporary table?",
+      "Interviewer: Those approaches wouldn't quite work here. A WHERE clause filters based on conditions but doesn't remove duplicate values. There's a specific SQL keyword that returns only unique values from a column. Think about what you'd add right after SELECT."
+    ],
+    "user_input": "Oh right, you'd put DISTINCT after SELECT. SELECT DISTINCT column FROM table.",
+    "attempt_number": 1,
+    "last_evaluation": "incorrect",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "correct",
+      "reasoning": "After a hint, the candidate correctly identified the DISTINCT keyword and showed the correct syntax by placing it after SELECT.",
+      "response": "Exactly. SELECT DISTINCT is the standard way to get unique values. Good recovery. Let's move on."
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "How do you find unique values in a column?",
+    "criteria": "Must use the DISTINCT keyword.",
+    "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+    "history": [],
+    "user_input": "There's a keyword for that... it's something like UNIQUE or maybe UNIQUE VALUES? I remember it goes next to SELECT.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "ambiguous",
+      "reasoning": "The candidate is clearly thinking of DISTINCT but said 'UNIQUE' or 'UNIQUE VALUES' instead. They may know the concept but not the exact keyword, or they may be conflating SQL syntax with another language.",
+      "response": "You're on the right track — there is indeed a keyword that goes next to SELECT for this purpose. The exact keyword isn't UNIQUE though. Can you think of another word that means 'different' or 'not repeating'?"
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "What is the difference between an INNER JOIN and a LEFT JOIN?",
+    "criteria": "Must explain that INNER JOIN returns only matching rows, while LEFT JOIN returns all rows from the left table regardless of matches.",
+    "hint_guidelines": "Ask what happens to rows in the first table if there is no matching entry in the second.",
+    "history": [],
+    "user_input": "INNER JOIN only returns rows where there's a match in both tables. LEFT JOIN returns all rows from the left table, and if there's no match in the right table, you get NULLs for those columns. So the key difference is that LEFT JOIN preserves everything from the left side.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "Python Basics",
+    "action": {
+      "evaluation": "correct",
+      "reasoning": "The candidate clearly explained that INNER JOIN returns only matching rows and LEFT JOIN returns all rows from the left table, including NULLs for non-matching rows. This covers the criteria fully.",
+      "response": "Spot on. You covered the essential distinction clearly. INNER JOIN filters to matches only, while LEFT JOIN preserves the left table completely. Let's switch topics now."
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "What is the difference between an INNER JOIN and a LEFT JOIN?",
+    "criteria": "Must explain that INNER JOIN returns only matching rows, while LEFT JOIN returns all rows from the left table regardless of matches.",
+    "hint_guidelines": "Ask what happens to rows in the first table if there is no matching entry in the second.",
+    "history": [],
+    "user_input": "INNER JOIN combines two tables where the join condition matches. LEFT JOIN also combines them but keeps more data from the first table.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "partially_correct",
+      "reasoning": "The candidate correctly noted that INNER JOIN uses a matching condition and that LEFT JOIN 'keeps more data' from the first table, but did not explicitly state that LEFT JOIN returns ALL rows from the left table or that unmatched rows produce NULLs.",
+      "response": "You're heading in the right direction. LEFT JOIN does keep more data from the first table. Can you be more specific about what happens to rows in the first table when there is no matching entry in the second table?"
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "What is the difference between an INNER JOIN and a LEFT JOIN?",
+    "criteria": "Must explain that INNER JOIN returns only matching rows, while LEFT JOIN returns all rows from the left table regardless of matches.",
+    "hint_guidelines": "Ask what happens to rows in the first table if there is no matching entry in the second.",
+    "history": [],
+    "user_input": "I think INNER JOIN is faster than LEFT JOIN. LEFT JOIN scans the whole left table so it's slower but gives more results.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "incorrect",
+      "reasoning": "The candidate focused on performance rather than the semantic difference. They did not explain that INNER JOIN returns only matching rows or that LEFT JOIN returns all left rows regardless of matches.",
+      "response": "Performance can vary depending on the query and indexes, but that's not the core difference. Think about what rows each type of join actually returns. If you have a row in the first table with no match in the second, what does each join do with it?"
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "What is the difference between an INNER JOIN and a LEFT JOIN?",
+    "criteria": "Must explain that INNER JOIN returns only matching rows, while LEFT JOIN returns all rows from the left table regardless of matches.",
+    "hint_guidelines": "Ask what happens to rows in the first table if there is no matching entry in the second.",
+    "history": [],
+    "user_input": "I know one of them keeps unmatched rows and the other doesn't. I think LEFT JOIN is the one that keeps everything? Or maybe that's RIGHT JOIN...",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "ambiguous",
+      "reasoning": "The candidate showed awareness that one join type keeps unmatched rows and the other doesn't, but was uncertain which is which and brought RIGHT JOIN into the mix without clarifying. The answer is too vague to confirm understanding.",
+      "response": "You're right that the key difference involves how unmatched rows are handled. LEFT JOIN does keep all rows from the left table. Can you walk through what the result looks like when a row in the left table has no match in the right table?"
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "What is the difference between an INNER JOIN and a LEFT JOIN?",
+    "criteria": "Must explain that INNER JOIN returns only matching rows, while LEFT JOIN returns all rows from the left table regardless of matches.",
+    "hint_guidelines": "Ask what happens to rows in the first table if there is no matching entry in the second.",
+    "history": [
+      "User: I think INNER JOIN is faster than LEFT JOIN. LEFT JOIN scans the whole left table so it's slower but gives more results.",
+      "Interviewer: Performance can vary depending on the query and indexes, but that's not the core difference. Think about what rows each type of join actually returns. If you have a row in the first table with no match in the second, what does each join do with it?"
+    ],
+    "user_input": "So INNER JOIN would drop that row entirely since there's no match. LEFT JOIN would keep it and fill in NULL for the columns from the second table.",
+    "attempt_number": 1,
+    "last_evaluation": "incorrect",
+    "next_topic": "Python Basics",
+    "action": {
+      "evaluation": "correct",
+      "reasoning": "After a hint, the candidate correctly explained that INNER JOIN drops unmatched rows and LEFT JOIN keeps them with NULLs. This matches the criteria.",
+      "response": "Exactly right. INNER JOIN excludes rows without matches, while LEFT JOIN preserves all rows from the left table with NULLs filling in where there's no match. Well done. Let's move on to the next topic."
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "How do you find unique values in a column?",
+    "criteria": "Must use the DISTINCT keyword.",
+    "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+    "history": [],
+    "user_input": "I think you use DISTINCT somewhere in the query, but I'm not sure if it goes before or after the column name.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "partially_correct",
+      "reasoning": "The candidate mentioned DISTINCT but did not demonstrate correct usage or syntax. They were unsure about placement, which suggests incomplete knowledge of the keyword.",
+      "response": "You've got the right keyword. DISTINCT goes right after SELECT, before the column name — for example, SELECT DISTINCT column_name FROM table_name. Let's continue."
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "How do you find unique values in a column?",
+    "criteria": "Must use the DISTINCT keyword.",
+    "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+    "history": [
+      "User: I'd just use GROUP BY on that column to get each value once.",
+      "Interviewer: GROUP BY can certainly produce unique values, and that's a valid technique. However, there's a more direct keyword specifically designed for this purpose. Do you know what it is?"
+    ],
+    "user_input": "Hmm, I'm not sure. Maybe SELECT DIFFERENT or something like that?",
+    "attempt_number": 1,
+    "last_evaluation": "partially_correct",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "ambiguous",
+      "reasoning": "The candidate said 'DIFFERENT' which is not a valid SQL keyword, but they are clearly reaching for DISTINCT and understand the concept. They just don't recall the exact word.",
+      "response": "You're very close. The keyword you're looking for is a synonym of 'different' — it starts with 'D'. Think of the word that means 'clearly different from others of the same kind'."
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "How do you find unique values in a column?",
+    "criteria": "Must use the DISTINCT keyword.",
+    "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+    "history": [],
+    "user_input": "I'm not really sure. Maybe something with HAVING or EXISTS?",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "incorrect",
+      "reasoning": "HAVING is for filtering grouped results and EXISTS checks for subquery matches. Neither is used for retrieving unique values. The candidate did not mention DISTINCT.",
+      "response": "Those are SQL keywords but they serve different purposes. HAVING filters grouped results and EXISTS checks for the existence of rows in a subquery. Think about what you'd add to your SELECT statement to remove duplicates from the result. What keyword tells the database 'I only want each value once'?"
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "How do you find unique values in a column?",
+    "criteria": "Must use the DISTINCT keyword.",
+    "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+    "history": [],
+    "user_input": "DISTINCT. You write SELECT DISTINCT column_name FROM table_name and it eliminates duplicates.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "correct",
+      "reasoning": "The candidate immediately and correctly answered with DISTINCT, proper syntax, and a clear explanation of its purpose.",
+      "response": "Exactly. Simple and correct. SELECT DISTINCT is the straightforward way to get unique values. Let's move to the next question."
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "What is the difference between an INNER JOIN and a LEFT JOIN?",
+    "criteria": "Must explain that INNER JOIN returns only matching rows, while LEFT JOIN returns all rows from the left table regardless of matches.",
+    "hint_guidelines": "Ask what happens to rows in the first table if there is no matching entry in the second.",
+    "history": [],
+    "user_input": "LEFT JOIN just means you write the left table first in the ON clause. The results are the same as INNER JOIN if your condition is correct.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "incorrect",
+      "reasoning": "The candidate fundamentally misunderstood LEFT JOIN, claiming it merely refers to the order of tables in the ON clause and produces the same results as INNER JOIN. Neither claim is true.",
+      "response": "Actually, LEFT JOIN and INNER JOIN produce different result sets regardless of how you write the ON clause. Think about what happens to a row in the first table when there's no matching row in the second table. Does each join type include or exclude that row?"
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "What is the difference between an INNER JOIN and a LEFT JOIN?",
+    "criteria": "Must explain that INNER JOIN returns only matching rows, while LEFT JOIN returns all rows from the left table regardless of matches.",
+    "hint_guidelines": "Ask what happens to rows in the first table if there is no matching entry in the second.",
+    "history": [],
+    "user_input": "They're basically the same thing but LEFT JOIN lets you specify which table is on the left side of the condition.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "incorrect",
+      "reasoning": "The candidate claimed the two joins are 'basically the same thing,' which is incorrect. They produce fundamentally different result sets. The candidate did not address how each join handles matching and non-matching rows.",
+      "response": "They actually produce quite different results. With INNER JOIN, if a row in the first table has no match in the second, that row is excluded from the result. What do you think LEFT JOIN does differently in that same situation?"
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "What is the difference between an INNER JOIN and a LEFT JOIN?",
+    "criteria": "Must explain that INNER JOIN returns only matching rows, while LEFT JOIN returns all rows from the left table regardless of matches.",
+    "hint_guidelines": "Ask what happens to rows in the first table if there is no matching entry in the second.",
+    "history": [],
+    "user_input": "LEFT JOIN includes rows from the left table even when there's no match, filling in NULLs. INNER JOIN... I think it also returns all rows? Or maybe it only returns the matched ones. I'm not 100% sure.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "partially_correct",
+      "reasoning": "The candidate correctly described LEFT JOIN but was unsure about INNER JOIN, hedging between 'all rows' and 'matched ones.' The LEFT JOIN explanation is correct but the INNER JOIN side is uncertain.",
+      "response": "You're right about LEFT JOIN. For INNER JOIN, which do you think is correct — all rows or just matched ones? Consider the name 'inner' as in the intersection of the two tables."
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "What is the difference between an INNER JOIN and a LEFT JOIN?",
+    "criteria": "Must explain that INNER JOIN returns only matching rows, while LEFT JOIN returns all rows from the left table regardless of matches.",
+    "hint_guidelines": "Ask what happens to rows in the first table if there is no matching entry in the second.",
+    "history": [
+      "User: They're basically the same thing but LEFT JOIN lets you specify which table is on the left side of the condition.",
+      "Interviewer: They actually produce quite different results. With INNER JOIN, if a row in the first table has no match in the second, that row is excluded from the result. What do you think LEFT JOIN does differently in that same situation?"
+    ],
+    "user_input": "Oh, so LEFT JOIN would keep that row and put NULL for the columns from the second table?",
+    "attempt_number": 1,
+    "last_evaluation": "incorrect",
+    "next_topic": "Python Basics",
+    "action": {
+      "evaluation": "partially_correct",
+      "reasoning": "The candidate now correctly described LEFT JOIN behavior (keeping unmatched rows with NULLs), building on the hint about INNER JOIN. However, they only explained one side of the comparison after being given the INNER JOIN explanation.",
+      "response": "Right. So to summarize the full picture: INNER JOIN drops unmatched rows, while LEFT JOIN keeps them with NULLs. You've got the key concept now. Let's move to the next topic."
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "What is the difference between an INNER JOIN and a LEFT JOIN?",
+    "criteria": "Must explain that INNER JOIN returns only matching rows, while LEFT JOIN returns all rows from the left table regardless of matches.",
+    "hint_guidelines": "Ask what happens to rows in the first table if there is no matching entry in the second.",
+    "history": [],
+    "user_input": "I want to say one of them includes nulls and the other doesn't? Or is that OUTER JOIN... I always get these mixed up.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "ambiguous",
+      "reasoning": "The candidate hinted at null handling but couldn't clearly associate it with either join type, and mentioned OUTER JOIN as well. The answer shows partial familiarity but no concrete understanding that can be confirmed.",
+      "response": "You're thinking along the right lines with NULLs. Let's narrow it down. If you have customers and orders, and a customer has never placed an order, which join type would still include that customer in the results?"
+    }
+  },
+  {
+    "topic": "SQL Basics",
+    "question": "How do you find unique values in a column?",
+    "criteria": "Must use the DISTINCT keyword.",
+    "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+    "history": [],
+    "user_input": "I know you can use SELECT and then some kind of modifier that tells the database to skip duplicates. It might be DISTINCT or it might be something else... I've used it before but I'm blanking on the exact word.",
+    "attempt_number": 0,
+    "last_evaluation": "None",
+    "next_topic": "SQL Basics",
+    "action": {
+      "evaluation": "ambiguous",
+      "reasoning": "The candidate described the concept accurately and even mentioned DISTINCT, but expressed uncertainty about whether it's the right keyword. This suggests familiarity but not confidence, making it unclear whether they truly know or are guessing.",
+      "response": "You described the concept well. The keyword you're thinking of is indeed DISTINCT — go ahead and give me the full SELECT statement."
+    }
+  }
+]
