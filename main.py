@@ -86,7 +86,7 @@ def main():
                         {
                             "question": q["text"],
                             "user_input": user_input,
-                            "attempt_number": orc.attempts,
+                            "attempt_number": orc.hints_given,
                         }
                     )
 
@@ -104,18 +104,13 @@ def main():
                     )
 
             action = result.action
-            command = action.command
-
-            # Orchestrator Override
-            if orc.should_force_skip() and command == "GIVE_HINT":
-                command = "PROMPT_SKIP"
-                print("\n(System: Maximum attempts reached. Suggesting skip.)")
+            evaluation = action.evaluation
 
             print(f"\nInterviewer: {action.response}")
 
             orc.history.append(f"User: {user_input}")
             orc.history.append(f"Interviewer: {action.response}")
-            orc.record_turn(command, action.evaluation)
+            orc.record_turn(evaluation)
 
         print("\n--- Interview Complete ---")
     except KeyboardInterrupt:
@@ -133,7 +128,7 @@ def _call_bot_with_retry(bot, q, orc, user_input):
                 hint_guidelines=q["hint_guidelines"],
                 history=orc.history[-5:],
                 user_input=user_input,
-                attempt_number=orc.attempts,
+                attempt_number=orc.hints_given,
                 last_evaluation=orc.last_evaluation,
                 next_topic=orc.get_next_topic_name(),
             )
