@@ -1,12 +1,11 @@
 class InterviewOrchestrator:
-    def __init__(self, questions, max_attempts=2):
+    def __init__(self, questions, max_hints=2):
         self.questions = questions
         self.current_idx = 0
-        self.attempts = 0  # Hint attempts (drives force-skip logic)
-        self.max_attempts = max_attempts
+        self.max_hints = max_hints
         self.history = []
 
-        # New State
+        # Turn tracking
         self.turns_in_question = 0
         self.hints_given = 0
         self.clarifications_requested = 0
@@ -19,38 +18,41 @@ class InterviewOrchestrator:
             return None
         return self.questions[self.current_idx]
 
-    def record_turn(self, command, evaluation):
+    def record_turn(self, evaluation):
         self.last_evaluation = evaluation
         self.evaluation_history.append(evaluation)
         self.turns_in_question += 1
 
-        if command in ["NEXT_QUESTION", "PROMPT_SKIP"]:
-            # Record summary before moving on
-            q = self.get_current_question()
-            summary = {
-                "question_id": q.get("id"),
-                "final_evaluation": evaluation,
-                "total_turns": self.turns_in_question,
-                "hints_used": self.hints_given,
-                "clarifications_used": self.clarifications_requested,
-                "was_force_skipped": command == "PROMPT_SKIP",
-            }
-            self.question_summaries.append(summary)
-
-            self.current_idx += 1
-            self.turns_in_question = 0
-            self.hints_given = 0
-            self.clarifications_requested = 0
-            self.attempts = 0
-            self.evaluation_history = []
-        elif command == "GIVE_HINT":
+        if evaluation == "correct":
+            self._advance_question(evaluation)
+        elif evaluation == "partially_correct":
             self.hints_given += 1
-            self.attempts += 1  # maintain for should_force_skip
-        elif command == "CLARIFY":
+            if self.hints_given >= self.max_hints:
+                self._advance_question(evaluation, force_skip=True)
+        elif evaluation == "incorrect":
+            self.hints_given += 1
+            if self.hints_given >= self.max_hints:
+                self._advance_question(evaluation, force_skip=True)
+        elif evaluation == "ambiguous":
             self.clarifications_requested += 1
 
-    def should_force_skip(self):
-        return self.attempts >= self.max_attempts
+    def _advance_question(self, evaluation, force_skip=False):
+        """Record summary and advance to the next question."""
+        q = self.get_current_question()
+        summary = {
+            "question_id": q.get("id"),
+            "final_evaluation": evaluation,
+            "total_turns": self.turns_in_question,
+            "hints_used": self.hints_given,
+            "clarifications_used": self.clarifications_requested,
+            "was_force_skipped": force_skip,
+        }
+        self.question_summaries.append(summary)
+        self.current_idx += 1
+        self.turns_in_question = 0
+        self.hints_given = 0
+        self.clarifications_requested = 0
+        self.evaluation_history = []
 
     def get_next_topic_name(self):
         next_idx = self.current_idx + 1
