@@ -50,3 +50,6 @@ mlruns/
 
 # Session data
 sessions/
+
+# Compiled models
+models/
