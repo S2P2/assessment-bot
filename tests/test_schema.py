@@ -8,9 +8,17 @@ def test_interview_action_correct():
         evaluation="correct",
         reasoning="User got it right.",
         response="Great job!",
-        command="NEXT_QUESTION",
     )
     assert action.evaluation == "correct"
+
+
+def test_interview_action_partially_correct():
+    action = InterviewAction(
+        evaluation="partially_correct",
+        reasoning="Right concept but missing key detail.",
+        response="You're on the right track. Can you elaborate?",
+    )
+    assert action.evaluation == "partially_correct"
 
 
 def test_interview_action_incorrect():
@@ -18,7 +26,6 @@ def test_interview_action_incorrect():
         evaluation="incorrect",
         reasoning="Missing key concept.",
         response="Not quite.",
-        command="GIVE_HINT",
     )
     assert action.evaluation == "incorrect"
 
@@ -28,19 +35,8 @@ def test_interview_action_ambiguous():
         evaluation="ambiguous",
         reasoning="Answer was vague.",
         response="Can you elaborate?",
-        command="CLARIFY",
     )
     assert action.evaluation == "ambiguous"
-
-
-def test_interview_action_prompt_skip():
-    action = InterviewAction(
-        evaluation="incorrect",
-        reasoning="Max attempts reached.",
-        response="Let's move on.",
-        command="PROMPT_SKIP",
-    )
-    assert action.command == "PROMPT_SKIP"
 
 
 def test_interview_action_invalid_evaluation():
@@ -49,15 +45,15 @@ def test_interview_action_invalid_evaluation():
             evaluation="excellent",
             reasoning="N/A",
             response="N/A",
-            command="NEXT_QUESTION",
         )
 
 
-def test_interview_action_invalid_command():
+def test_interview_action_command_field_removed():
+    """Command field no longer exists on InterviewAction."""
     with pytest.raises(ValidationError):
         InterviewAction(
             evaluation="correct",
             reasoning="N/A",
             response="N/A",
-            command="SKIP",
+            command="NEXT_QUESTION",
         )
