@@ -17,5 +17,5 @@ class InterviewTurn(dspy.Signature):
     )
     next_topic = dspy.InputField(desc="Name of the next topic, or None if finishing.")
     action: InterviewAction = dspy.OutputField(
-        desc="Structured response including evaluation, reasoning, and the next response string. If command is NEXT_QUESTION, the response MUST be a concluding statement or transition. It MUST NOT ask follow-up questions. Use 'CLARIFY' if the user is too vague to evaluate."
+        desc="Structured response with evaluation (correct/partially_correct/incorrect/ambiguous), reasoning, and the next response string."
     )
