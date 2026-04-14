@@ -131,7 +131,7 @@ def _build_ui():
                 gr.Markdown("### Progress")
                 sidebar_topic = gr.Markdown("**Topic:** -")
                 sidebar_question = gr.Markdown("**Question:** -")
-                sidebar_attempts = gr.Markdown("**Attempts:** 0 / 2")
+                sidebar_attempts = gr.Markdown("**Hints:** 0 / 2")
                 sidebar_turn = gr.Markdown("**Turn:** -")
                 gr.Markdown("---")
                 gr.Markdown("### History")

@@ -2,12 +2,16 @@ import argparse
 
 import mlflow
 import uuid
+from importlib.metadata import version as _pkg_version
 from mlflow.utils.git_utils import get_git_commit
 from src.config import load_config, init_lm, load_interview_data
 from src.orchestrator import InterviewOrchestrator
 from src.modules import InterviewBot
 
-VERSION = "0.3.2"
+try:
+    VERSION = _pkg_version("assessment-bot")
+except Exception:
+    VERSION = "0.5.0"
 MAX_RETRIES = 2
 
 

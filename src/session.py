@@ -74,7 +74,7 @@ def resume_session(user_id: str, questions: list[dict]) -> Optional[str]:
         return None
 
     session_uuid = saved["uuid"]
-    orc = _deserialize_orchestrator(saved["orchestrator"], questions)
+    orc = _deserialize_orchestrator(saved["orchestrator"], questions, user_id)
     if orc is None:
         return None
 
@@ -143,9 +143,17 @@ def _serialize_orchestrator(orc: InterviewOrchestrator) -> dict:
 def _deserialize_orchestrator(
     state: dict,
     questions: list[dict],
+    user_id: str = "unknown",
 ) -> Optional[InterviewOrchestrator]:
     """Rebuild orchestrator from saved state + fresh questions."""
     try:
+        # Detect old session format and log migration
+        if "attempts" in state or "max_attempts" in state:
+            logger.warning(
+                "Migrating old session format (attempts/max_attempts) for user %s",
+                user_id,
+            )
+
         orc = InterviewOrchestrator(
             questions,
             max_hints=state.get("max_hints", state.get("max_attempts", 2)),
