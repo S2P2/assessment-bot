@@ -7,6 +7,8 @@ Usage:
     PYTHONPATH=. OPENAI_API_KEY=your-key uv run python scripts/optimize.py
 """
 
+import os
+
 import dspy
 
 from src.config import init_lm, load_config
@@ -43,6 +45,7 @@ def main():
         InterviewBot(),
         trainset=trainset,
     )
+    os.makedirs("models", exist_ok=True)
     bootstrap_bot.save("models/bootstrap_fewshot.json")
     print("Saved: models/bootstrap_fewshot.json")
 

@@ -1,8 +1,9 @@
 class InterviewOrchestrator:
-    def __init__(self, questions, max_hints=2):
+    def __init__(self, questions, max_hints=2, max_ambiguous_turns=3):
         self.questions = questions
         self.current_idx = 0
         self.max_hints = max_hints
+        self.max_ambiguous_turns = max_ambiguous_turns
         self.history = []
 
         # Turn tracking
@@ -25,16 +26,14 @@ class InterviewOrchestrator:
 
         if evaluation == "correct":
             self._advance_question(evaluation)
-        elif evaluation == "partially_correct":
-            self.hints_given += 1
-            if self.hints_given >= self.max_hints:
-                self._advance_question(evaluation, force_skip=True)
-        elif evaluation == "incorrect":
+        elif evaluation in ("partially_correct", "incorrect"):
             self.hints_given += 1
             if self.hints_given >= self.max_hints:
                 self._advance_question(evaluation, force_skip=True)
         elif evaluation == "ambiguous":
             self.clarifications_requested += 1
+            if self.clarifications_requested >= self.max_ambiguous_turns:
+                self._advance_question(evaluation, force_skip=True)
 
     def _advance_question(self, evaluation, force_skip=False):
         """Record summary and advance to the next question."""
