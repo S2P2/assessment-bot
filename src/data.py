@@ -12,7 +12,7 @@ _SCHEMA_PATH = (
 
 def load_questions(path: str):
     try:
-        with open(path, "r") as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
     except FileNotFoundError:
         sys.exit(f"Error: Questions file not found: {path}")
@@ -20,7 +20,7 @@ def load_questions(path: str):
         sys.exit(f"Error: Invalid JSON in {path}: {e}")
 
     try:
-        with open(_SCHEMA_PATH, "r") as f:
+        with open(_SCHEMA_PATH, encoding="utf-8") as f:
             schema = json.load(f)
     except FileNotFoundError:
         sys.exit(f"Error: Schema file not found: {_SCHEMA_PATH}")

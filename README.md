@@ -1,6 +1,12 @@
-# DSPy Interview Bot POC (v0.4.1)
+# DSPy Interview Bot POC (v0.5.0)
 
 An IT skill interview chatbot with both **terminal** and **web UI** interfaces, built with the **DSPy framework**. It uses a Unified Predictor model with **Chain of Thought** reasoning to evaluate answers and generate responses in a single LLM call, while a Python Orchestrator manages the rigid conversation state.
+
+## New in v0.5.0
+
+- **Web UI CLI Arguments**: `web.py` now accepts `--questions`, `--model`, `--base-url`, and `--no-mlflow` — same flags as `main.py`.
+- **UTF-8 fix**: Non-ASCII question files (e.g. `questions_th.json`) now load correctly on Windows.
+- **Dependency updates**: cryptography (CVE), pytest (CVE), pillow, python-multipart.
 
 ## New in v0.4.1
 
@@ -50,7 +56,14 @@ An IT skill interview chatbot with both **terminal** and **web UI** interfaces, 
 
 ### Run the Web UI
 ```bash
+# Default (questions.json, model from .env)
 uv run python web.py
+
+# Thai questions with a different model
+uv run python web.py --questions questions_th.json --model openai/gpt-4o
+
+# Quick test without MLflow
+uv run python web.py --questions questions_th.json --no-mlflow
 ```
 Then navigate to `http://localhost:7860` in your browser.
 

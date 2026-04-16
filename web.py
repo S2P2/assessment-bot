@@ -1,3 +1,5 @@
+import argparse
+
 import gradio as gr
 import mlflow
 from mlflow.utils.git_utils import get_git_commit
@@ -19,16 +21,50 @@ _BADGE_MAP = {
     "ambiguous": "~",
 }
 
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Assessment Bot — Gradio web UI")
+    parser.add_argument(
+        "--questions",
+        default="questions.json",
+        help="Path to questions JSON file (default: questions.json)",
+    )
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="LLM model identifier (overrides MODEL from .env, e.g. openai/gpt-4o)",
+    )
+    parser.add_argument(
+        "--base-url",
+        default=None,
+        help="OpenAI-compatible API base URL (overrides OPENAI_BASE_URL from .env)",
+    )
+    parser.add_argument(
+        "--no-mlflow",
+        action="store_true",
+        help="Disable MLflow logging",
+    )
+    return parser.parse_known_args()[0]
+
+
 # --- Startup: load config, init LLM, load questions ---
+_args = _parse_args()
+
 config = load_config()
+if _args.model:
+    config["model"] = _args.model
+if _args.base_url:
+    config["base_url"] = _args.base_url
 lm = init_lm(config)
-interview_data, all_questions = load_interview_data()
+
+interview_data, all_questions = load_interview_data(_args.questions)
 bot = InterviewBot()
 
-mlflow.set_experiment("Interview_Bot_Web")
-git_commit = get_git_commit(".") or "local-dev"
-mlflow.set_active_model(name=f"assessment-bot-web-{git_commit[:8]}")
-mlflow.dspy.autolog()
+if not _args.no_mlflow:
+    mlflow.set_experiment("Interview_Bot_Web")
+    git_commit = get_git_commit(".") or "local-dev"
+    mlflow.set_active_model(name=f"assessment-bot-web-{git_commit[:8]}")
+    mlflow.dspy.autolog()
 
 
 # --- Helper functions ---
@@ -267,26 +303,29 @@ def _build_ui():
 
             # Call bot with retry
             try:
-                with mlflow.start_span(name=f"{q['topic_name']}: {q['id']}") as span:
-                    span.set_inputs(
-                        {
-                            "question": q["text"],
-                            "user_input": user_message,
-                            "attempt_number": orc.attempts,
-                        }
-                    )
-
+                if _args.no_mlflow:
                     result = _call_bot_with_retry(bot, q, orc, user_message)
+                else:
+                    with mlflow.start_span(name=f"{q['topic_name']}: {q['id']}") as span:
+                        span.set_inputs(
+                            {
+                                "question": q["text"],
+                                "user_input": user_message,
+                                "attempt_number": orc.attempts,
+                            }
+                        )
 
-                    span.set_outputs(result.action.model_dump())
+                        result = _call_bot_with_retry(bot, q, orc, user_message)
 
-                    mlflow.update_current_trace(
-                        tags={"version": VERSION, "model": config["model"]},
-                        metadata={
-                            "mlflow.trace.user": data.user_id,
-                            "mlflow.trace.session": session_uuid,
-                        },
-                    )
+                        span.set_outputs(result.action.model_dump())
+
+                        mlflow.update_current_trace(
+                            tags={"version": VERSION, "model": config["model"]},
+                            metadata={
+                                "mlflow.trace.user": data.user_id,
+                                "mlflow.trace.session": session_uuid,
+                            },
+                        )
             except Exception as e:
                 history.append(
                     {
