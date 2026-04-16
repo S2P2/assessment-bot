@@ -130,6 +130,7 @@ def _serialize_orchestrator(orc: InterviewOrchestrator) -> dict:
     return {
         "current_idx": orc.current_idx,
         "max_hints": orc.max_hints,
+        "max_ambiguous_turns": orc.max_ambiguous_turns,
         "turns_in_question": orc.turns_in_question,
         "hints_given": orc.hints_given,
         "clarifications_requested": orc.clarifications_requested,
@@ -157,6 +158,7 @@ def _deserialize_orchestrator(
         orc = InterviewOrchestrator(
             questions,
             max_hints=state.get("max_hints", state.get("max_attempts", 2)),
+            max_ambiguous_turns=state.get("max_ambiguous_turns", 3),
         )
         orc.current_idx = state["current_idx"]
         orc.turns_in_question = state["turns_in_question"]
