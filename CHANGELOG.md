@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-04-16
+
+### Added
+- **Web UI CLI Arguments**: `web.py` now accepts `--questions`, `--model`, `--base-url`, and `--no-mlflow` flags, matching `main.py`. Uses `parse_known_args()` to avoid conflicts with pytest's CLI args when web.py is imported during tests.
+
+### Fixed
+- **UTF-8 encoding on Windows**: `load_questions()` now explicitly opens JSON files with `encoding="utf-8"` instead of relying on the OS default (cp874 on Thai Windows), preventing `UnicodeDecodeError` with non-ASCII question files.
+
+### Dependencies
+- Bumped cryptography 46.0.6 → 46.0.7 (CVE-2026-39892).
+- Bumped pytest 9.0.2 → 9.0.3 (CVE-2025-71176).
+- Bumped pillow 12.1.1 → 12.2.0.
+- Bumped python-multipart 0.0.24 → 0.0.26.
+
 ## [0.4.1] - 2026-04-10
 
 ### Fixed
