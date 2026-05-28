@@ -45,6 +45,7 @@ mlruns/
 # IDE
 .vscode/
 .idea/
+.pi/
 *.swp
 *.swo
 
