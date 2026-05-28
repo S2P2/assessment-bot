@@ -8,7 +8,7 @@ from src.orchestrator import InterviewOrchestrator
 from src.modules import InterviewBot, SummaryBot
 from src.report import generate_report, save_report
 
-VERSION = "0.3.2"
+VERSION = "0.6.0"
 MAX_RETRIES = 2
 
 

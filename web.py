@@ -14,7 +14,7 @@ from src.session import (
 )
 from src.report import generate_report, save_report
 
-VERSION = "0.4.1"
+VERSION = "0.6.0"
 MAX_RETRIES = 2
 _BADGE_MAP = {
     "correct": "\u2713",

@@ -1,6 +1,12 @@
-# DSPy Interview Bot POC (v0.5.0)
+# DSPy Interview Bot POC (v0.6.0)
 
 An IT skill interview chatbot with both **terminal** and **web UI** interfaces, built with the **DSPy framework**. It uses a Unified Predictor model with **Chain of Thought** reasoning to evaluate answers and generate responses in a single LLM call, while a Python Orchestrator manages the rigid conversation state.
+
+## New in v0.6.0
+
+- **End-of-Interview Report**: Generates a markdown report with per-question breakdown, aggregate score, and LLM-powered improvement summary (per-topic strengths/weaknesses + overall verdict).
+- **Report File Output**: Reports saved to `reports/{user_id}.md` for both CLI and web UI.
+- **Improvement Summary**: New `SummaryBot` DSPy module generates structured feedback on candidate performance.
 
 ## New in v0.5.0
 
