@@ -1,5 +1,5 @@
 import dspy
-from src.schema import InterviewAction
+from src.schema import InterviewAction, SummaryVerdict
 
 
 class InterviewTurn(dspy.Signature):
@@ -18,4 +18,18 @@ class InterviewTurn(dspy.Signature):
     next_topic = dspy.InputField(desc="Name of the next topic, or None if finishing.")
     action: InterviewAction = dspy.OutputField(
         desc="Structured response including evaluation, reasoning, and the next response string. If command is NEXT_QUESTION, the response MUST be a concluding statement or transition. It MUST NOT ask follow-up questions. Use 'CLARIFY' if the user is too vague to evaluate."
+    )
+
+
+class InterviewSummary(dspy.Signature):
+    """Generate an end-of-interview improvement summary based on the full conversation."""
+
+    question_summaries = dspy.InputField(
+        desc="List of per-question summaries with evaluation, hints used, and skip status."
+    )
+    conversation_history = dspy.InputField(
+        desc="Full transcript of the interview (all turns between candidate and interviewer)."
+    )
+    verdict: SummaryVerdict = dspy.OutputField(
+        desc="Structured summary with per-topic observations and an overall verdict."
     )

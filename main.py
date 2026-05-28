@@ -5,7 +5,8 @@ import uuid
 from mlflow.utils.git_utils import get_git_commit
 from src.config import load_config, init_lm, load_interview_data
 from src.orchestrator import InterviewOrchestrator
-from src.modules import InterviewBot
+from src.modules import InterviewBot, SummaryBot
+from src.report import generate_report, save_report
 
 VERSION = "0.3.2"
 MAX_RETRIES = 2
@@ -62,6 +63,7 @@ def main():
 
     orc = InterviewOrchestrator(all_questions)
     bot = InterviewBot()
+    summary_bot = SummaryBot()
 
     print(f"--- Starting Interview: {data['interview_id']} ---")
 
@@ -118,6 +120,14 @@ def main():
             orc.record_turn(command, action.evaluation)
 
         print("\n--- Interview Complete ---")
+
+        # Generate report
+        report = generate_report(
+            orc, all_questions, user_id, data["interview_id"], summary_bot=summary_bot
+        )
+        filepath = save_report(report, user_id)
+        print(f"\nReport saved to: {filepath}")
+        print("\n" + report)
     except KeyboardInterrupt:
         print("\n--- Interview ended by user ---")
 

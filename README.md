@@ -109,12 +109,13 @@ PYTHONPATH=. uv run pytest
 
 ## Architecture
 
-- `main.py`: CLI entry point with MLflow configuration and retry logic.
-- `web.py`: Gradio 6 web UI with sidebar, chat, session management, and MLflow tracing.
-- `src/modules.py`: DSPy modules (using `ChainOfThought`).
-- `src/signatures.py`: DSPy signatures defining the I/O schema and constraints.
+- `main.py`: CLI entry point with retry logic and report generation.
+- `web.py`: Gradio 6 web UI with sidebar, chat, session management, MLflow tracing, and report generation.
+- `src/modules.py`: DSPy modules (`InterviewBot` for turns, `SummaryBot` for report summary).
+- `src/signatures.py`: DSPy signatures defining the I/O schema (`InterviewTurn`, `InterviewSummary`).
 - `src/orchestrator.py`: Python state management (attempts, topics, history).
-- `src/schema.py`: Pydantic models for structured LLM interaction.
+- `src/schema.py`: Pydantic models for structured LLM interaction (`InterviewAction`, `SummaryVerdict`, `TopicObservation`).
 - `src/data.py`: Question loading with validation, and `flatten_questions()` for topic association.
+- `src/report.py`: End-of-interview report generation — per-question breakdown, aggregate score, improvement summary.
 - `src/session.py`: JSON file-based session persistence with server-side registry.
 - `src/config.py`: Shared config loading, LLM initialization, and interview data loading.
