@@ -45,8 +45,12 @@ mlruns/
 # IDE
 .vscode/
 .idea/
+.pi/
 *.swp
 *.swo
 
 # Session data
 sessions/
+
+# Generated reports
+reports/

@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.6.0] - 2026-05-28
+
+### Added
+- **End-of-Interview Report**: Generates a markdown report after the interview completes, containing per-question breakdown, raw count aggregate score, and LLM-powered improvement summary (per-topic strengths/weaknesses + overall verdict).
+- **Report File Output**: Reports saved to `reports/{user_id}.md` (CLI and web UI).
+- **SummaryBot**: New DSPy module (`InterviewSummary` signature) for generating the improvement summary.
+- **SummaryVerdict / TopicObservation**: New Pydantic models for structured summary output.
+- **Context Glossary**: Added `CONTEXT.md` with domain language definitions.
+- **Report Tests**: 13 new tests covering score calculation, breakdown, report generation, and file output.
 
 ## [0.5.0] - 2026-04-16
 

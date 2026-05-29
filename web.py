@@ -5,15 +5,16 @@ import mlflow
 from mlflow.utils.git_utils import get_git_commit
 
 from src.config import init_lm, load_config, load_interview_data
-from src.modules import InterviewBot
+from src.modules import InterviewBot, SummaryBot
 from src.session import (
     create_session,
     get_session,
     resume_session,
     save_session,
 )
+from src.report import generate_report, save_report
 
-VERSION = "0.4.1"
+VERSION = "0.6.0"
 MAX_RETRIES = 2
 _BADGE_MAP = {
     "correct": "\u2713",
@@ -59,6 +60,7 @@ lm = init_lm(config)
 
 interview_data, all_questions = load_interview_data(_args.questions)
 bot = InterviewBot()
+summary_bot = SummaryBot()
 
 if not _args.no_mlflow:
     mlflow.set_experiment("Interview_Bot_Web")
@@ -356,18 +358,36 @@ def _build_ui():
             # Check if interview complete
             next_q = orc.get_current_question()
             if next_q is None:
-                summary_lines = ["---\n**Interview Complete!**\n"]
-                for s in orc.question_summaries:
-                    badge = _BADGE_MAP.get(s["final_evaluation"], "?")
-                    summary_lines.append(
-                        f"{badge} {s['question_id']}: {s['final_evaluation']}"
+                # Generate full report
+                try:
+                    report = generate_report(
+                        orc,
+                        all_questions,
+                        data.user_id,
+                        interview_data["interview_id"],
+                        summary_bot=summary_bot,
                     )
-                history.append(
-                    {
-                        "role": "assistant",
-                        "content": "\n".join(summary_lines),
-                    }
-                )
+                    filepath = save_report(report, data.user_id)
+                    history.append(
+                        {
+                            "role": "assistant",
+                            "content": report,
+                        }
+                    )
+                except Exception as e:
+                    # Fallback to basic summary if report generation fails
+                    summary_lines = ["---\n**Interview Complete!**\n"]
+                    for s in orc.question_summaries:
+                        badge = _BADGE_MAP.get(s["final_evaluation"], "?")
+                        summary_lines.append(
+                            f"{badge} {s['question_id']}: {s['final_evaluation']}"
+                        )
+                    history.append(
+                        {
+                            "role": "assistant",
+                            "content": "\n".join(summary_lines),
+                        }
+                    )
             elif command in ("NEXT_QUESTION", "PROMPT_SKIP"):
                 # Show next question
                 history.append(
