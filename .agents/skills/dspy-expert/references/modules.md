@@ -1,5 +1,48 @@
 # DSPy Modules
 
+*Includes content from [dspy-agent-skills](https://github.com/intertwine/dspy-agent-skills) v0.2.3 ([`f2f7055`](https://github.com/intertwine/dspy-agent-skills/commit/f2f7055770e8c28f755a652e4d507da813a17c8a)).*
+
+## `dspy.configure`
+
+```python
+dspy.configure(
+    lm: dspy.BaseLM | None = None,
+    track_usage: bool = False,
+    async_max_workers: int = 8,
+    adapter: dspy.Adapter | None = None,  # ChatAdapter / JSONAdapter / XMLAdapter
+    callbacks: list[dspy.callbacks.BaseCallback] | None = None,
+    warn_on_type_mismatch: bool = True,
+)
+```
+
+Sets thread-local defaults. Use `dspy.context(...)` as a `with`-block to scope overrides.
+
+DSPy 3.2.x warns by default when a module call passes extra input fields or values that don't match the signature's declared types. Treat those warnings as a callsite bug first; disable with `dspy.configure(warn_on_type_mismatch=False)` only if intentional.
+
+## `dspy.LM`
+
+```python
+dspy.LM(
+    model: str,                    # "provider/model-name"
+    model_type: Literal["chat", "text", "responses"] = "chat",
+    api_key: str | None = None,
+    api_base: str | None = None,
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    cache: bool = True,
+    callbacks: list[BaseCallback] | None = None,
+    num_retries: int = 3,
+    provider: dspy.Provider | None = None,
+    finetuning_model: str | None = None,
+    launch_kwargs: dict | None = None,
+    train_kwargs: dict | None = None,
+    use_developer_role: bool = False,
+    **kwargs,                      # forwarded to the provider backend
+)
+```
+
+`.copy(rollout_id=n)` creates a deterministic variant that bypasses cache collisions.
+
 ## Built-in Modules
 
 All modules inherit from `dspy.Module`. Use them directly or compose them.
@@ -17,34 +60,45 @@ All modules inherit from `dspy.Module`. Use them directly or compose them.
 | `dspy.BestOfN` | Sample N independently, pick best | Reliability via sampling |
 | `dspy.Parallel` | Run modules in parallel | Batch processing |
 
+### Predictor constructors
+
+| Class | Signature |
+|---|---|
+| `dspy.Predict` | `Predict(signature, callbacks=None, **config)` |
+| `dspy.ChainOfThought` | `ChainOfThought(signature, rationale_field=None, rationale_field_type=str, **config)` |
+| `dspy.ReAct` | `ReAct(signature: type[Signature], tools: list[Callable], max_iters: int = 20)` |
+| `dspy.ProgramOfThought` | `ProgramOfThought(signature, max_iters: int = 3, interpreter=None)` |
+| `dspy.RLM` | `RLM(signature, max_iterations=20, max_llm_calls=50, max_output_chars=10_000, verbose=False, tools=None, sub_lm=None, interpreter=None)` |
+
 ### Structured Outputs & Adapters
-In modern DSPy (2.5+), structured outputs are achieved by using Pydantic types in your `Signature` and configuring an **Adapter** (like `dspy.JSONAdapter`).
+In modern DSPy (2.5+), structured outputs are achieved by using Pydantic types in your `Signature` and configuring an **Adapter**.
 
 ```python
 import dspy
 from pydantic import BaseModel, Field
 from typing import List
 
-# 1. Define your output structure
 class Person(BaseModel):
     name: str
     age: int = Field(ge=0, le=120)
     hobbies: List[str]
 
-# 2. Define a Signature with types
 class Extraction(dspy.Signature):
     """Extract person details from text."""
     text: str = dspy.InputField()
     result: Person = dspy.OutputField()
 
-# 3. Configure DSPy to use an adapter (globally or per-call)
 dspy.configure(adapter=dspy.JSONAdapter())
 
-# 4. Use standard dspy.Predict (it will now handle JSON/Pydantic)
 extractor = dspy.Predict(Extraction)
 response = extractor(text="Alice is 25 and likes climbing and painting.")
 print(response.result.name, response.result.age)
 ```
+
+Adapter options:
+- `dspy.ChatAdapter` (default) — JSON-in-markdown with section headers.
+- `dspy.JSONAdapter` — strict JSON I/O; best for tool-calling models.
+- `dspy.XMLAdapter` — XML-tagged fields; good for Claude with complex structures.
 
 **`dspy.BestOfN` vs `dspy.Refine`:**
 - `BestOfN(module, N=5, reward_fn=fn, threshold=1.0)` — N **independent** runs, picks the best. No feedback between attempts.
@@ -66,20 +120,7 @@ results = my_module.batch(examples=[ex1, ex2, ex3], num_threads=4, return_failed
 # If return_failed_examples=True: returns (results, failed_examples, exceptions)
 ```
 
-**`dspy.RLM` — Recursive Language Model (3.1.1+):** Explores large contexts via sandboxed Python REPL. Requires Deno.
-```python
-rlm = dspy.RLM(
-    signature="context, query -> answer",
-    max_iterations=20,      # maximum REPL loops
-    max_llm_calls=50,       # maximum sub-LM calls
-    sub_lm=None,            # optional cheaper model for sub-queries
-    tools=None,             # list of custom tool functions
-)
-result = rlm(context="...very large document...", query="What is the revenue?")
-print(result.answer)
-print(result.trajectory)       # list of {code, output} steps
-```
-Built-in REPL tools: `llm_query(prompt)`, `llm_query_batched(prompts)`, `SUBMIT(...)`. Also supports `aforward()` for async.
+**`dspy.RLM` — Recursive Language Model (3.1.1+):** See [rlm.md](rlm.md) for full deep dive.
 
 **`dspy.LocalSandbox` for code execution:**
 ```python
@@ -111,8 +152,6 @@ result = react(question="Who won the 2024 Olympics marathon?")
 pot = dspy.ProgramOfThought("question -> answer", max_iters=3)
 result = pot(question="What is the sum of squares from 1 to 10?")
 print(result.answer)  # "385"
-# ProgramOfThought writes Python code, executes it in a sandbox, and extracts the answer.
-# Ideal for math, symbolic computation, and data manipulation tasks.
 
 # BestOfN — pick best of multiple samples
 bon = dspy.BestOfN(dspy.ChainOfThought("question -> answer"), N=5, reward_fn=my_metric)
@@ -131,7 +170,7 @@ Build complex programs by composing modules:
 class RAG(dspy.Module):
     def __init__(self, num_docs=5):
         self.num_docs = num_docs
-        self.retrieve = dspy.Retrieve(k=num_docs)          # if using a retriever
+        self.retrieve = dspy.Retrieve(k=num_docs)
         self.generate = dspy.ChainOfThought("context, question -> answer")
 
     def forward(self, question):
@@ -147,17 +186,47 @@ class MultiHopRAG(dspy.Module):
         context = []
         for i, gen_q in enumerate(self.generate_query):
             query = gen_q(context=context, question=question).query
-            context += search(query)   # your search function
+            context += search(query)
         return self.generate_answer(context=context, question=question)
 ```
 
-**Module API:**
+## `dspy.Module` API
+
 - `module.forward(**kwargs)` — main logic
 - `module(...)` — calls forward
 - `module.named_predictors()` — iterate over all sub-predictors
 - `module.set_lm(lm)` — set LM for all predictors in this module
 - `module.get_lm()` — get the LM currently used by the module's predictors
-- `module.batch(examples, num_threads=2, return_failed_examples=False)` — run module on a list of examples in parallel (returns list of results; if `return_failed_examples=True`, returns `(results, failed_examples, exceptions)`)
+- `module.batch(examples, num_threads=2, return_failed_examples=False)` — parallel execution
 - `module.deepcopy()` — deep copy the module
 - `module.reset_copy()` — copy with reset state
 - `module.save(path)` / `module.load(path)` — persistence
+- `module.dump_state()` / `.load_state(state)` — in-memory
+
+## Custom LM backends (3.2.x)
+
+If `dspy.LM("provider/model")` is not enough, subclass `dspy.BaseLM`:
+
+```python
+class MyLM(dspy.BaseLM):
+    @property
+    def supports_function_calling(self) -> bool:
+        return False
+
+    @property
+    def supports_reasoning(self) -> bool:
+        return False
+
+    @property
+    def supports_response_schema(self) -> bool:
+        return False
+
+    @property
+    def supported_params(self) -> set[str]:
+        return set()
+
+    def forward(self, prompt=None, messages=None, **kwargs):
+        ...
+```
+
+In 3.2.x, DSPy's adapters read capability properties directly from `BaseLM`, making custom backends less coupled to LiteLLM internals. If your provider throws a context-window exception, translate it to `dspy.ContextWindowExceededError(model=self.model, message=...)`.
