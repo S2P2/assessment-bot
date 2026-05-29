@@ -1,0 +1,126 @@
+{
+  "description": "Answer variants for InterviewBot optimization training data. 5-7 variants per question covering: clearly correct, clearly incorrect, partially correct, edge case, vague/too short.",
+  "question_ids": ["sql-1", "sql-2", "python-1"],
+  "variants": {
+    "sql-1": [
+      {
+        "variant_type": "clearly_correct",
+        "user_input": "You can use SELECT DISTINCT column_name FROM table_name to get only the unique values from that column.",
+        "expected_evaluation": "correct",
+        "expected_command": "NEXT_QUESTION"
+      },
+      {
+        "variant_type": "clearly_incorrect",
+        "user_input": "You would use UNIQUE(column_name) to get the unique values.",
+        "expected_evaluation": "incorrect",
+        "expected_command": "GIVE_HINT"
+      },
+      {
+        "variant_type": "partially_correct",
+        "user_input": "You use DISTINCT somewhere in the SELECT statement to remove duplicates.",
+        "expected_evaluation": "correct",
+        "expected_command": "NEXT_QUESTION"
+      },
+      {
+        "variant_type": "edge_case",
+        "user_input": "SELECT DISTINCT column_name FROM table_name GROUP BY column_name — although GROUP BY alone would also work.",
+        "expected_evaluation": "correct",
+        "expected_command": "NEXT_QUESTION"
+      },
+      {
+        "variant_type": "vague",
+        "user_input": "There's a keyword for that.",
+        "expected_evaluation": "ambiguous",
+        "expected_command": "CLARIFY"
+      },
+      {
+        "variant_type": "clearly_incorrect",
+        "user_input": "Just use FILTER UNIQUE in your query.",
+        "expected_evaluation": "incorrect",
+        "expected_command": "GIVE_HINT"
+      }
+    ],
+    "sql-2": [
+      {
+        "variant_type": "clearly_correct",
+        "user_input": "INNER JOIN returns only the rows that have matching values in both tables. LEFT JOIN returns all rows from the left table and the matched rows from the right table — if there's no match, the right side columns are NULL.",
+        "expected_evaluation": "correct",
+        "expected_command": "NEXT_QUESTION"
+      },
+      {
+        "variant_type": "clearly_incorrect",
+        "user_input": "INNER JOIN is faster than LEFT JOIN. That's the main difference.",
+        "expected_evaluation": "incorrect",
+        "expected_command": "GIVE_HINT"
+      },
+      {
+        "variant_type": "partially_correct",
+        "user_input": "INNER JOIN only gives you rows where both tables match. LEFT JOIN gives you everything from the left table.",
+        "expected_evaluation": "correct",
+        "expected_command": "NEXT_QUESTION"
+      },
+      {
+        "variant_type": "edge_case",
+        "user_input": "They're similar, but LEFT JOIN is a type of outer join — it preserves all rows from the left table, filling NULLs for non-matching right-side rows. INNER JOIN is an inner join that only keeps matched rows.",
+        "expected_evaluation": "correct",
+        "expected_command": "NEXT_QUESTION"
+      },
+      {
+        "variant_type": "vague",
+        "user_input": "One keeps everything and the other doesn't.",
+        "expected_evaluation": "ambiguous",
+        "expected_command": "CLARIFY"
+      },
+      {
+        "variant_type": "clearly_incorrect",
+        "user_input": "LEFT JOIN only returns rows from the left table, nothing from the right.",
+        "expected_evaluation": "incorrect",
+        "expected_command": "GIVE_HINT"
+      }
+    ],
+    "python-1": [
+      {
+        "variant_type": "clearly_correct",
+        "user_input": "You use try and except blocks. Put the code that might fail inside the try block, and handle the error in the except block. For example: try: x = 1/0 except ZeroDivisionError: print('Cannot divide by zero').",
+        "expected_evaluation": "correct",
+        "expected_command": "NEXT_QUESTION"
+      },
+      {
+        "variant_type": "clearly_incorrect",
+        "user_input": "You catch exceptions using try and catch blocks in Python.",
+        "expected_evaluation": "incorrect",
+        "expected_command": "GIVE_HINT"
+      },
+      {
+        "variant_type": "partially_correct",
+        "user_input": "Use try and except. The risky code goes in try, and you handle errors in except.",
+        "expected_evaluation": "correct",
+        "expected_command": "NEXT_QUESTION"
+      },
+      {
+        "variant_type": "edge_case",
+        "user_input": "Python uses try/except/else/finally for exception handling. The try block contains the code that may raise an exception. except catches specific exceptions. else runs if no exception occurs, and finally always runs regardless.",
+        "expected_evaluation": "correct",
+        "expected_command": "NEXT_QUESTION"
+      },
+      {
+        "variant_type": "vague",
+        "user_input": "Python has error handling built in.",
+        "expected_evaluation": "ambiguous",
+        "expected_command": "CLARIFY"
+      },
+      {
+        "variant_type": "clearly_incorrect",
+        "user_input": "You can use if/else to check for errors before they happen, which is better than exception handling.",
+        "expected_evaluation": "incorrect",
+        "expected_command": "GIVE_HINT"
+      },
+      {
+        "variant_type": "clearly_incorrect",
+        "user_input": "Use try and catch to handle errors in Python.",
+        "expected_evaluation": "incorrect",
+        "expected_command": "GIVE_HINT"
+      }
+    ]
+  }
+}

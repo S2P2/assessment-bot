@@ -1,0 +1,141 @@
+{
+  "predictor.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "topic": "SQL Basics",
+        "question": "How do you find unique values in a column?",
+        "criteria": "Must use the DISTINCT keyword.",
+        "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+        "history": [],
+        "user_input": "You can use SELECT DISTINCT column_name FROM table_name to get only the unique values from that column.",
+        "attempt_number": 0,
+        "last_evaluation": "None",
+        "next_topic": null,
+        "reasoning": "The candidate correctly identified and implemented the `DISTINCT` keyword within a `SELECT` statement to retrieve unique values from a column. This directly satisfies the specified criteria.",
+        "action": {
+          "evaluation": "correct",
+          "reasoning": "The candidate correctly used the DISTINCT keyword to filter for unique values as requested.",
+          "response": "That's correct! The DISTINCT keyword is the standard way to filter out duplicate rows and retrieve only unique values from a result set. Well done.",
+          "command": "NEXT_QUESTION"
+        }
+      },
+      {
+        "augmented": true,
+        "topic": "SQL Basics",
+        "question": "How do you find unique values in a column?",
+        "criteria": "Must use the DISTINCT keyword.",
+        "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+        "history": [],
+        "user_input": "You would use UNIQUE(column_name) to get the unique values.",
+        "attempt_number": 0,
+        "last_evaluation": "None",
+        "next_topic": null,
+        "reasoning": "The user suggested using `UNIQUE(column_name)`. While `UNIQUE` is a valid concept in SQL (specifically as a constraint), it is not the keyword used within a `SELECT` statement to filter for unique values; that keyword is `DISTINCT`. Since this is the first attempt, I will provide a hint as per the guidelines.",
+        "action": {
+          "evaluation": "incorrect",
+          "reasoning": "The user confused the UNIQUE constraint with the keyword used for selecting unique values in a query.",
+          "response": "Not quite. While 'UNIQUE' is a concept used for constraints in SQL, there is a specific keyword used within a SELECT statement to return only unique rows. Do you know which one it is?",
+          "command": "GIVE_HINT"
+        }
+      },
+      {
+        "augmented": true,
+        "topic": "SQL Basics",
+        "question": "How do you find unique values in a column?",
+        "criteria": "Must use the DISTINCT keyword.",
+        "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+        "history": [],
+        "user_input": "You use DISTINCT somewhere in the SELECT statement to remove duplicates.",
+        "attempt_number": 0,
+        "last_evaluation": "None",
+        "next_topic": null,
+        "reasoning": "The user correctly identified the `DISTINCT` keyword and accurately explained its placement and purpose within a `SELECT` statement to handle duplicate values. This directly satisfies the provided criteria.",
+        "action": {
+          "evaluation": "correct",
+          "reasoning": "The user correctly identified the 'DISTINCT' keyword and its functionality in a SELECT statement.",
+          "response": "That's correct! Using the DISTINCT keyword is the standard way to filter out duplicate values and return only unique entries. Well done!",
+          "command": "NEXT_QUESTION"
+        }
+      },
+      {
+        "augmented": true,
+        "topic": "SQL Basics",
+        "question": "How do you find unique values in a column?",
+        "criteria": "Must use the DISTINCT keyword.",
+        "hint_guidelines": "Nudge them toward the concept of uniqueness without saying 'DISTINCT' directly.",
+        "history": [],
+        "user_input": "SELECT DISTINCT column_name FROM table_name GROUP BY column_name — although GROUP BY alone would also work.",
+        "attempt_number": 0,
+        "last_evaluation": "None",
+        "next_topic": null,
+        "reasoning": "The candidate correctly used the `DISTINCT` keyword in their SQL statement, meeting the primary criterion. They also demonstrated a good understanding of SQL by noting that `GROUP BY` is a valid alternative for achieving the same result. Although the provided query is slightly redundant (using both `DISTINCT` and `GROUP BY` on the same column), the core requirement was satisfied.",
+        "action": {
+          "evaluation": "correct",
+          "reasoning": "The user correctly used the DISTINCT keyword and acknowledged the GROUP BY alternative.",
+          "response": "Correct! You used the DISTINCT keyword as required, and you're also right that GROUP BY would achieve the same result. That concludes our session on SQL Basics.",
+          "command": "NEXT_QUESTION"
+        }
+      }
+    ],
+    "signature": {
+      "instructions": "Evaluate candidate answer and generate the next interviewer response.",
+      "fields": [
+        {
+          "prefix": "Topic:",
+          "description": "${topic}"
+        },
+        {
+          "prefix": "Question:",
+          "description": "${question}"
+        },
+        {
+          "prefix": "Criteria:",
+          "description": "${criteria}"
+        },
+        {
+          "prefix": "Hint Guidelines:",
+          "description": "${hint_guidelines}"
+        },
+        {
+          "prefix": "History:",
+          "description": "Previous turns as a list of strings"
+        },
+        {
+          "prefix": "User Input:",
+          "description": "${user_input}"
+        },
+        {
+          "prefix": "Attempt Number:",
+          "description": "${attempt_number}"
+        },
+        {
+          "prefix": "Last Evaluation:",
+          "description": "The evaluation result from the previous turn, or 'None' if first turn."
+        },
+        {
+          "prefix": "Next Topic:",
+          "description": "Name of the next topic, or None if finishing."
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Action:",
+          "description": "Structured response including evaluation, reasoning, and the next response string. If command is NEXT_QUESTION, the response MUST be a concluding statement or transition. It MUST NOT ask follow-up questions. Use 'CLARIFY' if the user is too vague to evaluate."
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.13",
+      "dspy": "3.1.3",
+      "cloudpickle": "3.1"
+    }
+  }
+}
