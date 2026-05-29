@@ -1,0 +1,3 @@
+# Use BootstrapFewShot as the initial optimizer for InterviewBot evaluation accuracy
+
+We're optimizing InterviewBot's per-turn evaluation (correct/incorrect/ambiguous) as the first step in an optimization pipeline. We have ~20 labeled examples (5-7 answer variants × 3 questions). BootstrapFewShot is the simplest optimizer that works with this data size. We explicitly deferred MIPROv2 and GEPA because they require 50+ examples. COPRO was considered but needs more data to rewrite instructions effectively. This is a smoke test — if BootstrapFewShot shows no improvement, the problem is likely data quality or metric design, not optimizer choice. Graduate to COPRO/MIPROv2 when the question pool grows.
